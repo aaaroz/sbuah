@@ -12,7 +12,7 @@ export const MenuCart = () => {
             className="fixed z-50 left-0 bottom-0 data-[open=true]:scale-100 data-[open=false]:-bottom-20 transition-all data-[open=false]:animate-out data-[open=true]:animate-in w-full bg-rose-800"
         >
             <div className="relative container p-5 text-white">
-                <Link href="/cart" className="flex justify-between items-center">
+                <Link href="/menu/cart" className="flex justify-between items-center">
                     <ShoppingBag size={36} />
                     <h5>Checkout dan Bayar</h5>
                     <span>3 menu</span>
