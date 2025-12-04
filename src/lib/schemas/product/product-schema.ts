@@ -23,10 +23,20 @@ export const createProductSchema = productSchema.omit({
 
 // Schema for update
 export const updateProductSchema = productSchema.partial().omit({
-  id: true,
   createdAt: true,
   updatedAt: true,
 });
+
+// Schema for fetching all products
+export const getAllProductSchema = z
+  .object({
+    page: z.number().min(1).default(1),
+    limit: z.number().min(1).max(100).default(10),
+    categoryId: z.uuid().optional(),
+  })
+  .optional();
+
+export const singleProductIdSchema = productSchema.pick({ id: true });
 
 // -------------------------
 // Product Types

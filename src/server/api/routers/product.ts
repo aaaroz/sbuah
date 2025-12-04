@@ -1,7 +1,8 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { z } from "zod";
 import {
   createProductSchema,
+  getAllProductSchema,
+  singleProductIdSchema,
   updateProductSchema,
 } from "@/lib/schemas/product/product-schema";
 
@@ -26,27 +27,24 @@ export const productRouter = createTRPCRouter({
   // GET ALL (with pagination)
   // ---------------------------
   getAll: publicProcedure
-    .input(
-      z
-        .object({
-          page: z.number().min(1).default(1),
-          limit: z.number().min(1).max(100).default(10),
-        })
-        .optional(),
-    )
+    .input(getAllProductSchema)
     .query(async ({ ctx, input }) => {
       const page = input?.page ?? 1;
       const limit = input?.limit ?? 10;
       const skip = (page - 1) * limit;
+      const categoryId = input?.categoryId;
+
+      const where = categoryId ? { categoryId } : {};
 
       const [items, totalCount] = await Promise.all([
         ctx.db.product.findMany({
           skip,
           take: limit,
           orderBy: { createdAt: "desc" },
-          include: { stats: true },
+          include: { stats: true, category: true },
+          where,
         }),
-        ctx.db.product.count(),
+        ctx.db.product.count({ where }),
       ]);
 
       return {
@@ -73,11 +71,7 @@ export const productRouter = createTRPCRouter({
   // GET ONE PRODUCT BY ID
   // ---------------------------
   getOne: publicProcedure
-    .input(
-      z.object({
-        id: z.uuid(),
-      }),
-    )
+    .input(singleProductIdSchema)
     .query(async ({ ctx, input }) => {
       return ctx.db.product.findUnique({
         where: { id: input.id },
@@ -88,11 +82,7 @@ export const productRouter = createTRPCRouter({
   // UPDATE PRODUCT
   // ---------------------------
   update: publicProcedure
-    .input(
-      updateProductSchema.extend({
-        id: z.uuid(),
-      }),
-    )
+    .input(updateProductSchema)
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
 
@@ -106,11 +96,7 @@ export const productRouter = createTRPCRouter({
   // DELETE PRODUCT
   // ---------------------------
   remove: publicProcedure
-    .input(
-      z.object({
-        id: z.uuid(),
-      }),
-    )
+    .input(singleProductIdSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.product.delete({
         where: { id: input.id },
