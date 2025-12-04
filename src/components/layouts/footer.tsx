@@ -24,10 +24,10 @@ const socials = [
 ];
 
 const links = [
-  { label: "About Us", href: "/about-us" },
-  { label: "Contact Us", href: "/contact-us" },
-  { label: "Guide & FAQ", href: "/guide-and-faq" },
-  { label: "Terms of Service", href: "/terms-of-service" },
+  { label: "Tentang Kami", href: "/about-us" },
+  { label: "Kontak Kami", href: "/contact-us" },
+  { label: "Petunjuk & Pertanyaan", href: "/guide-and-faq" },
+  { label: "Ketentuan Pengguna", href: "/terms-of-services" },
 ];
 
 export const Footer = () => {
