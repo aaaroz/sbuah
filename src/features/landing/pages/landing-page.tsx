@@ -6,18 +6,12 @@ import { WelcomeSection } from "../components/welcome-section";
 import { QuestionSection } from "../components/question-section";
 import { CtaSection } from "../components/cta-section";
 import { HeadMetaData } from "@/components/commons/head-meta-data";
-import { api } from "@/lib/utils/api";
 
 const LandingPage = () => {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
-
   return (
     <LandingPageLayout>
       <HeadMetaData />
       <div className="flex flex-col gap-14 md:gap-16">
-        <p className="text-2xl text-white">
-          {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-        </p>
         <HeroSection />
         <WelcomeSection />
         <QuestionSection />

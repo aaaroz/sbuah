@@ -31,13 +31,15 @@ export const MenuCard: React.FC<MenuCardProps> = ({
           height={240}
           className="aspect-square max-h-40 w-full rounded-lg object-cover"
         />
-        <div className="space-y-2 text-left md:space-y-4">
+        <div className="w-full space-y-2 text-left md:space-y-4">
           <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardDescription className="line-clamp-2 h-[40px]">
+            {description}
+          </CardDescription>
           <div className="flex justify-between">
             <span className="flex items-center gap-1.5 text-sm">
               <Star className="size-4" fill="yellow" color="yellow" />
-              <h6 className="text-xs">{rating}</h6>
+              <h6 className="text-xs">{rating.toFixed(1)}</h6>
               <p className="text-xs">({reviews}+ reviews)</p>
             </span>
             <CardTitle>Rp {price.toLocaleString("id")}</CardTitle>
