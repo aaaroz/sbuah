@@ -7,17 +7,17 @@ import { MenuCart } from "../components/menu-cart";
 import { HeadMetaData } from "@/components/commons/head-meta-data";
 
 const MenuPage = () => {
-    return (
-        <LandingPageLayout>
-            <HeadMetaData title="Menu Spesial" />
-            <div className="container flex flex-col gap-14 md:gap-16 mt-4">
-                <ImageHeader imageUrl="/menu.png" isMenuPage />
-                <MenuFilter />
-                <MenuWrapper />
-                <MenuCart />
-            </div>
-        </LandingPageLayout>
-    );
+  return (
+    <LandingPageLayout>
+      <HeadMetaData title="Menu Spesial" />
+      <div className="container mt-4 flex flex-col gap-14 md:gap-16">
+        <ImageHeader imageUrl="/menu.png" isMenuPage />
+        <MenuFilter />
+        <MenuWrapper />
+        <MenuCart />
+      </div>
+    </LandingPageLayout>
+  );
 };
 
 export default MenuPage;
