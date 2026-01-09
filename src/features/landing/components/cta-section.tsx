@@ -1,6 +1,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export const CtaSection = () => {
   return (
@@ -12,8 +13,8 @@ export const CtaSection = () => {
         <p className="w-3/4 text-xs md:text-sm">
           Pesan minuman favoritmu dengan mudah sekarang juga!
         </p>
-        <Button className="bg-[#40407C] px-4 hover:bg-[#40407C]/80">
-          Pesan Sekarang!
+        <Button className="bg-[#40407C] px-4 hover:bg-[#40407C]/80" asChild>
+          <Link href="/menu">Pesan Sekarang!</Link>
         </Button>
       </div>
       <div className="flex justify-center md:justify-end">

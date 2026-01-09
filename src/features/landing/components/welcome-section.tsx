@@ -48,12 +48,14 @@ export const WelcomeSection = ({ className }: Props) => {
                 className="-pl-1.5 basis-1/2 p-1 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 2xl:basis-1/6"
               >
                 <MenuCard
+                  id={id}
                   imageUrl={imageUrl ?? "/sop-buah-menu.webp"}
-                  title={name}
+                  name={name}
                   description={description ?? "Minuman segar manis!"}
                   rating={stats?.avgRating ?? 0}
                   reviews={stats?.reviewCount ?? 0}
                   price={price}
+                  isHomePage
                 />
               </CarouselItem>
             ),

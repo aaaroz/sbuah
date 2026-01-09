@@ -5,6 +5,7 @@ import {
   singleProductIdSchema,
   updateProductSchema,
 } from "@/lib/schemas/product/product-schema";
+import { type Prisma } from "@prisma/client";
 
 export const productRouter = createTRPCRouter({
   // ---------------------------
@@ -33,8 +34,20 @@ export const productRouter = createTRPCRouter({
       const limit = input?.limit ?? 10;
       const skip = (page - 1) * limit;
       const categoryId = input?.categoryId;
+      const searchQuery = input?.searchQuery;
 
-      const where = categoryId ? { categoryId } : {};
+      //      const where = categoryId ? { categoryId } : {};
+      const where: Prisma.ProductWhereInput = {
+        ...(categoryId && {
+          categoryId,
+        }),
+        ...(searchQuery && {
+          name: {
+            contains: searchQuery,
+            mode: "insensitive",
+          },
+        }),
+      };
 
       const [items, totalCount] = await Promise.all([
         ctx.db.product.findMany({

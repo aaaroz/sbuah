@@ -37,9 +37,9 @@ export const Footer = () => {
       <Logo variant={theme === "light" ? "primary" : "secondary"} />
       <nav>
         <ul className="flex flex-wrap justify-center gap-4 text-sm font-semibold md:gap-8">
-          {links.map((link) => (
+          {links.map((link, i) => (
             <Link
-              key={link.href}
+              key={link.href + i}
               href={link.href}
               as={link.href}
               className="underline-offset-2 hover:underline md:text-lg"
@@ -50,9 +50,9 @@ export const Footer = () => {
         </ul>
       </nav>
       <div className="flex gap-4">
-        {socials.map((social) => (
+        {socials.map((social, i) => (
           <Button
-            key={social.href}
+            key={social.href + i}
             asChild
             className="h-11 w-11 rounded-full bg-rose-950/90 p-0 hover:bg-rose-900 dark:bg-foreground dark:hover:bg-foreground/90"
           >

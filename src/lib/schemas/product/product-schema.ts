@@ -33,6 +33,7 @@ export const getAllProductSchema = z
     page: z.number().min(1).default(1),
     limit: z.number().min(1).max(100).default(10),
     categoryId: z.uuid().optional(),
+    searchQuery: z.string().min(1).optional(),
   })
   .optional();
 

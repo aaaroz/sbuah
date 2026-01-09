@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 
 const lemon = Lemon({ weight: "400", subsets: ["latin"] });
 
@@ -26,7 +27,9 @@ export const HeroSection = () => {
             es buah terbaik kami!
           </p>
           <div className="flex justify-center">
-            <Button className="px-10 py-5">Pesan Sekarang!</Button>
+            <Button className="px-10 py-5" asChild>
+              <Link href="/menu">Pesan Sekarang!</Link>
+            </Button>
           </div>
         </div>
         <Image
