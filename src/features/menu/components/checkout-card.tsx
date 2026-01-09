@@ -11,7 +11,7 @@ type Props = {
   test?: number;
 };
 
-export const CheckoutCard = (props: Props) => {
+export const CheckoutCard = (_props: Props) => {
   return (
     <Card className="w-full bg-rose-950">
       <CardContent className="p-1 px-4">

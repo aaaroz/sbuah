@@ -9,14 +9,12 @@ import { CustomPagination } from "@/components/layouts/custom-pagination";
 import { useSearchParams } from "next/navigation";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Link, MenuSquareIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {  MenuSquareIcon } from "lucide-react";
 
 export const MenuWrapper = () => {
   const products = useProductStore((state) => state.products);
