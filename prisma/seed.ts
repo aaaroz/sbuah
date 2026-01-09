@@ -139,6 +139,62 @@ async function main() {
   }
 
   console.log("🌱 Drink seeding completed!");
+
+  console.log("🌱 Seeding orders...");
+
+  const products = await prisma.product.findMany();
+
+  const randomItem = <T>(arr: T[]) =>
+    arr[Math.floor(Math.random() * arr.length)];
+
+  for (let i = 0; i < 10; i++) {
+    const itemCount = Math.floor(Math.random() * 3) + 1; // 1–3 items
+    const selectedProducts = [...products]
+      .sort(() => 0.5 - Math.random())
+      .slice(0, itemCount);
+
+    const orderItems = selectedProducts.map((product) => {
+      const quantity = Math.floor(Math.random() * 3) + 1;
+
+      return {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity,
+        note: Math.random() > 0.7 ? "Less ice" : null,
+      };
+    });
+
+    const subtotal = orderItems.reduce(
+      (sum, item) => sum + Number(item.price) * item.quantity,
+      0,
+    );
+
+    const deliveryFee = Math.random() > 0.5 ? 5000 : 0;
+    const totalAmount = subtotal + deliveryFee;
+
+    await prisma.order.create({
+      data: {
+        buyerName: `Customer ${i + 1}`,
+        phoneNumber: `08${Math.floor(100000000 + Math.random() * 900000000)}`,
+        email: Math.random() > 0.5 ? `customer${i + 1}@mail.com` : null,
+        note: Math.random() > 0.6 ? "Tolong cepat ya" : null,
+
+        paymentMethod: randomItem(["CASH", "TRANSFER"])!,
+        purchaseMethod: randomItem(["PICK_UP", "DELIVERY"])!,
+        status: randomItem(["PENDING", "PAID", "COMPLETED"]),
+
+        subtotal,
+        totalAmount,
+
+        items: {
+          create: orderItems,
+        },
+      },
+    });
+  }
+
+  console.log("🌱 Order seeding completed!");
 }
 
 main()
