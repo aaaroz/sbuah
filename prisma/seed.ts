@@ -1,7 +1,19 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "./generated/prisma/client";
+import { env } from "@/env";
 
-const prisma = new PrismaClient();
+type ProductRating = {
+  productId: number;
+  rating: number;
+  reviewText: string;
+};
 
+const adapter = new PrismaPg({
+  connectionString: env.DATABASE_URL,
+});
+const prisma = new PrismaClient({
+  adapter,
+});
 async function main() {
   console.log("🌱 Seeding categories...");
 
@@ -29,7 +41,7 @@ async function main() {
       name: "Sop Buah Spesial",
       description: "Sop buah segar dengan campuran buah tropis.",
       price: 12000,
-      categoryId: anekaJus.id,
+      categoryId: anekaJus?.id,
     },
     {
       name: "Jus Mangga",
@@ -124,7 +136,7 @@ async function main() {
       );
     }
 
-    const ratings = await Promise.all(ratingsArray);
+    const ratings = (await Promise.all(ratingsArray)) as ProductRating[];
 
     const avgRating =
       ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;

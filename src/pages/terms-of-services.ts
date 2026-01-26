@@ -1,3 +1,1 @@
-import TermsOfServicesPage from "@/features/misc/pages/terms-of-services-page";
-
-export default TermsOfServicesPage;
+export { default } from "@/features/misc/pages/terms-of-services-page";

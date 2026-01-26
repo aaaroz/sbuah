@@ -15,6 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { signIn, signUp } from "@/lib/utils/auth-client";
+import { useRouter } from "next/navigation";
 
 const authSchema = z.object({
   username: z
@@ -28,7 +30,9 @@ const authSchema = z.object({
 });
 
 type TAuthForm = z.infer<typeof authSchema>;
+
 export const LoginForm = () => {
+  const router = useRouter();
   const [isVisible, setIsVisible] = React.useState(true);
   const form = useForm<TAuthForm>({
     resolver: zodResolver(authSchema),
@@ -39,9 +43,43 @@ export const LoginForm = () => {
     mode: "onSubmit",
   });
 
-  const onSubmit = (values: TAuthForm) => {
-    console.log(values);
+  const onSubmit = async (values: TAuthForm) => {
+    const { data, error } = await signIn.username(
+      {
+        username: values.username,
+        password: values.password,
+        callbackURL: "/dashboard",
+      },
+      {
+        onSuccess: (_) => {
+          router.push("/dashboard");
+        },
+        onError: (ctx) => {
+          alert(ctx.error.message);
+        },
+      },
+    );
+
+    console.log({ data, error });
   };
+
+  // const onSignUp = async () => {
+  //   const { data, error } = await signUp.email(
+  //     {
+  //       email: "zoldyckramdanz@gmail.com",
+  //       password: "admin@123",
+  //       username: "admin",
+  //       name: "Administrator",
+  //       callbackURL: "/dashboard",
+  //     },
+  //     {
+  //       onError: (ctx) => {
+  //         alert(ctx.error.message);
+  //       },
+  //     },
+  //   );
+  //   console.log({ data, error });
+  // };
 
   return (
     <Form {...form}>
@@ -51,8 +89,8 @@ export const LoginForm = () => {
             control={form.control}
             name="username"
             render={({ field }) => (
-              <FormItem className="text-white">
-                <FormLabel className="text-rose-950">Username</FormLabel>
+              <FormItem className="text-foreground">
+                <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -69,8 +107,8 @@ export const LoginForm = () => {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem className="text-white">
-                <FormLabel className="text-rose-950">Password</FormLabel>
+              <FormItem className="text-foreground">
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -95,6 +133,15 @@ export const LoginForm = () => {
         <Button type="submit" className="w-full">
           Submit
         </Button>
+
+        {/* <Button */}
+        {/*   type="button" */}
+        {/*   className="w-full" */}
+        {/*   onClick={onSignUp} */}
+        {/*   variant="outline" */}
+        {/* > */}
+        {/*   SignUp */}
+        {/* </Button> */}
         <p className="text-center text-xs md:text-sm">
           Amankan akun admin sebaik mungkin, jangan sampai ada orang yang tau ya
           :D

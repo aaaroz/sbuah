@@ -1,4 +1,8 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  privateProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import {
   createProductSchema,
   getAllProductSchema,
@@ -94,7 +98,7 @@ export const productRouter = createTRPCRouter({
   // ---------------------------
   // UPDATE PRODUCT
   // ---------------------------
-  update: publicProcedure
+  update: privateProcedure
     .input(updateProductSchema)
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
@@ -108,7 +112,7 @@ export const productRouter = createTRPCRouter({
   // ---------------------------
   // DELETE PRODUCT
   // ---------------------------
-  remove: publicProcedure
+  remove: privateProcedure
     .input(singleProductIdSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.product.delete({

@@ -1,4 +1,6 @@
+import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "./confirm-dialog";
+import { signOut } from "@/lib/utils/auth-client";
 
 interface SignOutDialogProps {
   open: boolean;
@@ -6,21 +8,16 @@ interface SignOutDialogProps {
 }
 
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
-  // const navigate = useNavigate();
-  // const location = useLocation();
-  // const { auth } = useAuthStore();
+  const router = useRouter();
 
-  const handleSignOut = () => {
-    console.log("Log out !");
-
-    //auth.reset();
-    // Preserve current location for redirect after sign-in
-    // const currentPath = location.href;
-    // navigate({
-    //   to: "/sign-in",
-    //   search: { redirect: currentPath },
-    //   replace: true,
-    // });
+  const handleSignOut = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: async () => {
+          router.push("/");
+        },
+      },
+    });
   };
 
   return (
