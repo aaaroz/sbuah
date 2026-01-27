@@ -7,14 +7,28 @@
  * need to use are documented accordingly near the end.
  */
 import { initTRPC, TRPCError } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { z, ZodError } from "zod";
 
 import { db } from "@/server/db";
 import { type User } from "better-auth";
-import { getSession } from "@/lib/utils/auth-client";
+import { auth } from "../auth";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { type IncomingHttpHeaders } from "node:http";
 
+const toFetchHeaders = (headers: IncomingHttpHeaders): Headers => {
+  const result = new Headers();
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (typeof value === "string") {
+      result.set(key, value);
+    } else if (Array.isArray(value)) {
+      result.set(key, value.join(","));
+    }
+  }
+
+  return result;
+};
 /**
  * 1. CONTEXT
  *
@@ -37,10 +51,10 @@ type CreateContextOptions = {
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     db,
-    user: _opts.user,
+    user: opts.user,
   };
 };
 
@@ -50,11 +64,16 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
-  const { data } = await getSession();
+export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+  const session = await auth.api.getSession({
+    headers: toFetchHeaders(opts.req.headers),
+  });
+
+  const source = opts.req.headers["x-trpc-source"] ?? "unknown";
+  console.log(">>> tRPC Request from", source, "by", session?.user.email);
 
   return createInnerTRPCContext({
-    user: data?.user,
+    user: session?.user,
   });
 };
 

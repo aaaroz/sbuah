@@ -20,6 +20,8 @@
     --secondary-foreground: 0 0% 97.25%;
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
+    --success: 142.1 76.2% 36.3%; /* green-600-ish */
+    --success-foreground: 0 0% 98%; /* white-ish */
     --destructive: 0 100% 45.77%;
     --destructive-foreground: 0 0% 98%;
     --ring: 346.8 77.2% 49.8%;
@@ -58,6 +60,8 @@
     --secondary-foreground: 0 0% 98%;
     --accent: 346.67 14.86% 14.73%;
     --accent-foreground: 0 0% 98%;
+    --success: 142.1 70.6% 45.3%; /* green-500-ish */
+    --success-foreground: 144 61% 10%; /* dark green text */
     --destructive: 0 95.12% 52.7%;
     --destructive-foreground: 0 85.7% 97.3%;
     --ring: 346.8 77.2% 49.8%;
