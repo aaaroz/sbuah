@@ -41,7 +41,7 @@ export const DashboardStatCard = ({
               {value}
 
               {valueSuffix && (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   {valueSuffix}
                 </span>
               )}

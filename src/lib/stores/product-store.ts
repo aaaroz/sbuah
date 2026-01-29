@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { type RouterOutputs } from "../utils/api";
+import { type Product } from "../types/product";
 
-type Product = RouterOutputs["product"]["getAll"]["items"][number];
 type Pagination = RouterOutputs["product"]["getAll"]["pagination"];
 type Category = RouterOutputs["category"]["getAll"][number];
 

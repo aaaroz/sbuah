@@ -1,5 +1,6 @@
 import { api } from "@/lib/utils/api";
 import { OrderCard } from "./dashboard-order-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function RecentOrders() {
   const { data, isLoading } = api.dashboard.getRecentOrders.useQuery();
@@ -8,7 +9,7 @@ export function RecentOrders() {
     return (
       <div className="space-y-6">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-10 animate-pulse rounded-md bg-muted" />
+          <Skeleton key={i} className="h-10 rounded-md" />
         ))}
       </div>
     );

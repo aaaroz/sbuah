@@ -15,6 +15,7 @@ interface MenuCardProps {
   rating: number;
   reviews: number;
   isHomePage?: boolean;
+  isPreview?: boolean;
 }
 
 export const MenuCard: React.FC<MenuCardProps> = ({
@@ -26,6 +27,7 @@ export const MenuCard: React.FC<MenuCardProps> = ({
   rating,
   reviews,
   isHomePage = false,
+  isPreview = false,
 }) => {
   const router = useRouter();
 
@@ -69,6 +71,7 @@ export const MenuCard: React.FC<MenuCardProps> = ({
           <Button
             className="w-full gap-2"
             onClick={() => {
+              if (isPreview) return;
               addItem({ id, name, price, imageUrl });
               if (isHomePage) router.push("/menu");
             }}

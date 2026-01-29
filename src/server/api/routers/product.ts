@@ -15,7 +15,7 @@ export const productRouter = createTRPCRouter({
   // ---------------------------
   // CREATE PRODUCT
   // ---------------------------
-  create: publicProcedure
+  create: privateProcedure
     .input(createProductSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.product.create({
@@ -24,6 +24,7 @@ export const productRouter = createTRPCRouter({
           description: input.description,
           price: input.price,
           imageUrl: input.imageUrl,
+          categoryId: input.categoryId,
         },
       });
     }),
@@ -90,9 +91,14 @@ export const productRouter = createTRPCRouter({
   getOne: publicProcedure
     .input(singleProductIdSchema)
     .query(async ({ ctx, input }) => {
-      return ctx.db.product.findUnique({
-        where: { id: input.id },
-      });
+      return ctx.db.product
+        .findUnique({
+          where: { id: input.id },
+        })
+        .then((product) => ({
+          ...product,
+          price: product?.price.toNumber() ?? 0,
+        }));
     }),
 
   // ---------------------------

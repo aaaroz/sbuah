@@ -14,7 +14,10 @@ export const HeroSection = () => {
   return (
     <section className="container overflow-hidden rounded-2xl">
       <div className="relative flex flex-col items-center gap-14 rounded-2xl bg-rose-950 pt-16 text-white">
-        <Logo className="relative z-30 h-auto w-auto max-w-32" />
+        <Logo
+          variant="secondary"
+          className="relative z-30 h-auto w-auto max-w-32"
+        />
         <div className="relative z-20 flex flex-col justify-center gap-8 text-white md:gap-10">
           <h1
             className={cn(lemon.className, "text-center text-3xl md:text-6xl")}

@@ -6,12 +6,13 @@ import { z } from "zod";
 export const productSchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
+  description: z.string().nullable(),
   price: z.number().positive(),
   imageUrl: z.url().nullable().optional(),
   isActive: z.boolean().default(true),
   createdAt: z.date(),
   updatedAt: z.date(),
+  categoryId: z.uuid().nullable(),
 });
 
 // Schema for create
@@ -42,6 +43,5 @@ export const singleProductIdSchema = productSchema.pick({ id: true });
 // -------------------------
 // Product Types
 // -------------------------
-export type Product = z.infer<typeof productSchema>;
 export type CreateProduct = z.infer<typeof createProductSchema>;
 export type UpdateProduct = z.infer<typeof updateProductSchema>;

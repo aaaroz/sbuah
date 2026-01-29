@@ -26,6 +26,11 @@ const config = {
         port: "",
         pathname: "/600x400/**",
       },
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+        port: "",
+      },
     ],
     dangerouslyAllowSVG: true,
   },

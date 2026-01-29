@@ -14,21 +14,7 @@ import { db } from "@/server/db";
 import { type User } from "better-auth";
 import { auth } from "../auth";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type IncomingHttpHeaders } from "node:http";
-
-const toFetchHeaders = (headers: IncomingHttpHeaders): Headers => {
-  const result = new Headers();
-
-  for (const [key, value] of Object.entries(headers)) {
-    if (typeof value === "string") {
-      result.set(key, value);
-    } else if (Array.isArray(value)) {
-      result.set(key, value.join(","));
-    }
-  }
-
-  return result;
-};
+import { toFetchHeaders } from "@/lib/utils";
 /**
  * 1. CONTEXT
  *

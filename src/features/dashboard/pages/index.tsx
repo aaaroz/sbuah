@@ -128,7 +128,7 @@ const DashboardPage = () => {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
             <Card className="col-span-1 lg:col-span-4">
               <CardHeader>
-                <CardTitle>Ringkasan Penjualan</CardTitle>
+                <CardTitle>Ringkasan Pendapatan</CardTitle>
               </CardHeader>
               <CardContent className="ps-2">
                 <Overview />
@@ -136,7 +136,7 @@ const DashboardPage = () => {
             </Card>
             <Card className="col-span-1 lg:col-span-3">
               <CardHeader>
-                <CardTitle>Penjualan Terbaru</CardTitle>
+                <CardTitle>Pesanan Terbaru</CardTitle>
                 <CardDescription>
                   Anda mencatat 265 penjualan bulan ini.
                 </CardDescription>

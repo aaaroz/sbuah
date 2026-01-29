@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/command";
 import { useTheme } from "next-themes";
 import { useSearch } from "@/lib/contexts/search-provider";
-import { sidebarData } from "../layouts/data/sidebar-data";
 import { ScrollArea } from "../ui/scroll-area";
+import { sidebarData } from "@/lib/data/sidebar";
 
 export function CommandMenu() {
   const router = useRouter();

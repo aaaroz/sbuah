@@ -1,12 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated/prisma/client";
 import { env } from "@/env";
-
-type ProductRating = {
-  productId: number;
-  rating: number;
-  reviewText: string;
-};
 
 const adapter = new PrismaPg({
   connectionString: env.DATABASE_URL,
@@ -14,176 +10,299 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({
   adapter,
 });
-async function main() {
+
+async function resetData() {
+  console.log("🧹 Resetting non-auth tables...");
+
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
+
+  await prisma.productRating.deleteMany();
+  await prisma.productStats.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
+
+  console.log("🧹 Reset completed");
+}
+
+const CATEGORY_DATA = ["Aneka Jus", "Pop Ice", "Cappuccino Cincau"];
+
+async function seedCategories() {
   console.log("🌱 Seeding categories...");
 
-  // Create categories
-  const categories = await Promise.all([
-    prisma.category.create({
-      data: { name: "Aneka Jus" },
-    }),
-    prisma.category.create({
-      data: { name: "Pop Ice" },
-    }),
-    prisma.category.create({
-      data: { name: "Cappuccino Cincau" },
-    }),
-  ]);
+  const categories = await Promise.all(
+    CATEGORY_DATA.map((name) =>
+      prisma.category.create({
+        data: { name },
+      }),
+    ),
+  );
 
-  const [anekaJus, popIce, cappuccinoCincau] = categories;
+  return Object.fromEntries(categories.map((c) => [c.name, c]));
+}
 
-  console.log("🌱 Seeding drink products...");
+type SeedProduct = {
+  name: string;
+  description: string;
+  price: number;
+  categoryName: string;
+};
 
-  // Drink product list grouped by category
-  const drinks = [
-    // Aneka Jus
-    {
-      name: "Sop Buah Spesial",
-      description: "Sop buah segar dengan campuran buah tropis.",
-      price: 12000,
-      categoryId: anekaJus?.id,
-    },
-    {
-      name: "Jus Mangga",
-      description: "Jus mangga segar dari buah pilihan.",
-      price: 13000,
-      categoryId: anekaJus.id,
-    },
-    {
-      name: "Jus Alpukat",
-      description: "Jus alpukat kental dengan topping coklat.",
-      price: 15000,
-      categoryId: anekaJus.id,
-    },
+const PRODUCT_DATA: SeedProduct[] = [
+  // ====================
+  // Aneka Jus
+  // ====================
+  {
+    name: "Sop Buah Spesial",
+    description: "Sop buah segar dengan campuran buah tropis.",
+    price: 12000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Jus Mangga",
+    description: "Jus mangga segar dari buah pilihan.",
+    price: 13000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Jus Alpukat",
+    description: "Jus alpukat kental dengan topping coklat.",
+    price: 15000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Jus Jeruk Peras",
+    description: "Jus jeruk segar tanpa gula tambahan.",
+    price: 10000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Jus Semangka",
+    description: "Jus semangka dingin menyegarkan.",
+    price: 9000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Jus Melon",
+    description: "Jus melon manis dan segar.",
+    price: 9000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Jus Strawberry",
+    description: "Jus strawberry segar dengan rasa asam manis.",
+    price: 14000,
+    categoryName: "Aneka Jus",
+  },
 
-    // Pop Ice
-    {
-      name: "Es Coklat Premium",
-      description: "Minuman coklat creamy dengan rasa manis seimbang.",
-      price: 15000,
-      categoryId: popIce.id,
-    },
-    {
-      name: "Milk Tea Boba",
-      description: "Milk tea dengan topping boba kenyal.",
-      price: 18000,
-      categoryId: popIce.id,
-    },
+  // ====================
+  // Pop Ice
+  // ====================
+  {
+    name: "Es Coklat Premium",
+    description: "Minuman coklat creamy dengan rasa manis seimbang.",
+    price: 15000,
+    categoryName: "Pop Ice",
+  },
+  {
+    name: "Milk Tea Boba",
+    description: "Milk tea dengan topping boba kenyal.",
+    price: 18000,
+    categoryName: "Pop Ice",
+  },
+  {
+    name: "Pop Ice Coklat",
+    description: "Pop Ice coklat dingin dan creamy.",
+    price: 8000,
+    categoryName: "Pop Ice",
+  },
+  {
+    name: "Pop Ice Strawberry",
+    description: "Pop Ice rasa strawberry favorit anak muda.",
+    price: 8000,
+    categoryName: "Pop Ice",
+  },
+  {
+    name: "Pop Ice Vanilla Latte",
+    description: "Perpaduan vanilla lembut dan kopi.",
+    price: 10000,
+    categoryName: "Pop Ice",
+  },
+  {
+    name: "Pop Ice Taro",
+    description: "Pop Ice taro dengan rasa manis khas.",
+    price: 9000,
+    categoryName: "Pop Ice",
+  },
 
-    // Cappuccino Cincau
-    {
-      name: "Cappuccino Cincau Ori",
-      description: "Minuman cappuccino segar dengan cincau kenyal.",
-      price: 12000,
-      categoryId: cappuccinoCincau.id,
-    },
-    {
-      name: "Cappuccino Cincau Gula Aren",
-      description: "Cappuccino cincau dengan gula aren premium.",
-      price: 14000,
-      categoryId: cappuccinoCincau.id,
-    },
+  // ====================
+  // Cappuccino Cincau
+  // ====================
+  {
+    name: "Cappuccino Cincau Ori",
+    description: "Minuman cappuccino segar dengan cincau kenyal.",
+    price: 12000,
+    categoryName: "Cappuccino Cincau",
+  },
+  {
+    name: "Cappuccino Cincau Gula Aren",
+    description: "Cappuccino cincau dengan gula aren premium.",
+    price: 14000,
+    categoryName: "Cappuccino Cincau",
+  },
+  {
+    name: "Cappuccino Cincau Susu",
+    description: "Cappuccino cincau dengan susu creamy.",
+    price: 13000,
+    categoryName: "Cappuccino Cincau",
+  },
+  {
+    name: "Cappuccino Cincau Extra Cincau",
+    description: "Cappuccino cincau dengan topping cincau melimpah.",
+    price: 15000,
+    categoryName: "Cappuccino Cincau",
+  },
 
-    // Common Drinks (Fallback category: Aneka Jus)
-    {
-      name: "Es Teh Manis",
-      description: "Es teh manis segar pelepas dahaga.",
-      price: 6000,
-      categoryId: anekaJus.id,
-    },
-    {
-      name: "Teh Tarik",
-      description: "Teh tarik creamy ala Malaysia.",
-      price: 10000,
-      categoryId: anekaJus.id,
-    },
-    {
-      name: "Lemon Tea",
-      description: "Teh lemon segar dengan aroma citrus.",
-      price: 9000,
-      categoryId: anekaJus.id,
-    },
-  ];
+  // ====================
+  // Common / Tea Based
+  // ====================
+  {
+    name: "Es Teh Manis",
+    description: "Es teh manis segar pelepas dahaga.",
+    price: 6000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Teh Tarik",
+    description: "Teh tarik creamy ala Malaysia.",
+    price: 10000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Lemon Tea",
+    description: "Teh lemon segar dengan aroma citrus.",
+    price: 9000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Thai Tea",
+    description: "Thai tea creamy dengan aroma khas.",
+    price: 12000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Green Tea Latte",
+    description: "Green tea latte lembut dan menenangkan.",
+    price: 14000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Lychee Tea",
+    description: "Teh leci segar dengan rasa manis alami.",
+    price: 11000,
+    categoryName: "Aneka Jus",
+  },
+  {
+    name: "Peach Tea",
+    description: "Teh persik dengan aroma fruity ringan.",
+    price: 11000,
+    categoryName: "Aneka Jus",
+  },
+];
 
-  for (const drink of drinks) {
-    const created = await prisma.product.create({
-      data: {
-        name: drink.name,
-        description: drink.description,
-        price: drink.price,
-        categoryId: drink.categoryId,
-        imageUrl: `https://placehold.co/600x400?text=${encodeURIComponent(
-          drink.name,
-        )}`,
+async function seedProducts(categories: Record<string, any>) {
+  console.log("🌱 Seeding products...");
+
+  const products = [];
+
+  for (const p of PRODUCT_DATA) {
+    const product = await prisma.product.upsert({
+      where: {
+        // Prisma requires a unique constraint – workaround using findFirst
+        id:
+          (
+            await prisma.product.findFirst({
+              where: {
+                name: p.name,
+                categoryId: categories[p.categoryName].id,
+              },
+              select: { id: true },
+            })
+          )?.id ?? "___new___",
+      },
+      update: {},
+      create: {
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        categoryId: categories[p.categoryName].id,
+        imageUrl: `https://placehold.co/600x400?text=${encodeURIComponent(p.name)}`,
       },
     });
 
-    // Generate sample ratings
-    const ratingCount = Math.floor(Math.random() * 5) + 3; // 3–7 reviews
-    const ratingsArray = [];
-
-    for (let i = 0; i < ratingCount; i++) {
-      const value = Math.floor(Math.random() * 3) + 3; // rating 3–5
-
-      ratingsArray.push(
-        prisma.productRating.create({
-          data: {
-            productId: created.id,
-            rating: value,
-            reviewText: `Sample review #${i + 1} for ${drink.name}`,
-          },
-        }),
-      );
-    }
-
-    const ratings = (await Promise.all(ratingsArray)) as ProductRating[];
-
-    const avgRating =
-      ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
-
-    await prisma.productStats.create({
-      data: {
-        productId: created.id,
-        avgRating: Number(avgRating.toFixed(2)),
-        reviewCount: ratings.length,
-      },
-    });
+    products.push(product);
   }
 
-  console.log("🌱 Drink seeding completed!");
+  return products;
+}
 
+async function seedRatingsAndStats(productId: string, productName: string) {
+  const ratingCount = Math.floor(Math.random() * 5) + 3;
+
+  const ratings = await prisma.$transaction(
+    Array.from({ length: ratingCount }).map((_, i) =>
+      prisma.productRating.create({
+        data: {
+          productId,
+          rating: Math.floor(Math.random() * 3) + 3,
+          reviewText: `Sample review #${i + 1} for ${productName}`,
+        },
+      }),
+    ),
+  );
+
+  const avg = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
+
+  await prisma.productStats.upsert({
+    where: { productId },
+    update: {
+      avgRating: avg,
+      reviewCount: ratings.length,
+    },
+    create: {
+      productId,
+      avgRating: avg,
+      reviewCount: ratings.length,
+    },
+  });
+}
+
+async function seedOrders(products: any[]) {
   console.log("🌱 Seeding orders...");
-
-  const products = await prisma.product.findMany();
 
   const randomItem = <T>(arr: T[]) =>
     arr[Math.floor(Math.random() * arr.length)];
 
   for (let i = 0; i < 10; i++) {
-    const itemCount = Math.floor(Math.random() * 3) + 1; // 1–3 items
-    const selectedProducts = [...products]
+    const selected = [...products]
       .sort(() => 0.5 - Math.random())
-      .slice(0, itemCount);
+      .slice(0, Math.floor(Math.random() * 3) + 1);
 
-    const orderItems = selectedProducts.map((product) => {
-      const quantity = Math.floor(Math.random() * 3) + 1;
+    const items = selected.map((p) => ({
+      productId: p.id,
+      name: p.name,
+      price: p.price,
+      imageUrl: p.imageUrl,
+      quantity: Math.floor(Math.random() * 3) + 1,
+      note: Math.random() > 0.7 ? "Less ice" : null,
+    }));
 
-      return {
-        productId: product.id,
-        name: product.name,
-        price: product.price,
-        quantity,
-        note: Math.random() > 0.7 ? "Less ice" : null,
-      };
-    });
-
-    const subtotal = orderItems.reduce(
-      (sum, item) => sum + Number(item.price) * item.quantity,
+    const subtotal = items.reduce(
+      (s, i) => s + Number(i.price) * i.quantity,
       0,
     );
 
     const deliveryFee = Math.random() > 0.5 ? 5000 : 0;
-    const totalAmount = subtotal + deliveryFee;
 
     await prisma.order.create({
       data: {
@@ -191,22 +310,30 @@ async function main() {
         phoneNumber: `08${Math.floor(100000000 + Math.random() * 900000000)}`,
         email: Math.random() > 0.5 ? `customer${i + 1}@mail.com` : null,
         note: Math.random() > 0.6 ? "Tolong cepat ya" : null,
-
-        paymentMethod: randomItem(["CASH", "TRANSFER"])!,
-        purchaseMethod: randomItem(["PICK_UP", "DELIVERY"])!,
+        paymentMethod: randomItem(["CASH", "TRANSFER"]) ?? "CASH",
+        purchaseMethod: randomItem(["PICK_UP", "DELIVERY"]) ?? "PICK_UP",
         status: randomItem(["PENDING", "PAID", "COMPLETED"]),
-
         subtotal,
-        totalAmount,
-
-        items: {
-          create: orderItems,
-        },
+        totalAmount: subtotal + deliveryFee,
+        items: { create: items },
       },
     });
   }
+}
 
-  console.log("🌱 Order seeding completed!");
+async function main() {
+  await resetData();
+
+  const categories = await seedCategories();
+  const products = await seedProducts(categories);
+
+  for (const p of products) {
+    await seedRatingsAndStats(p.id, p.name);
+  }
+
+  await seedOrders(products);
+
+  console.log("✅ Seeding completed successfully");
 }
 
 main()

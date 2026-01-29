@@ -1,3 +1,4 @@
+import { type SidebarData } from "@/components/layouts/types";
 import {
   LayoutDashboard,
   HelpCircle,
@@ -8,7 +9,6 @@ import {
   UserCog,
   ReceiptText,
 } from "lucide-react";
-import { type SidebarData } from "../types";
 
 export const sidebarData: SidebarData = {
   user: {
@@ -27,8 +27,25 @@ export const sidebarData: SidebarData = {
         },
         {
           title: "Products",
-          url: "/dashboard/products",
+          // url: "/dashboard/products",
           icon: Package,
+          items: [
+            {
+              title: "View",
+              url: "/dashboard/products",
+              //    icon: Package,
+            },
+            {
+              title: "Tambah Produk",
+              url: "/dashboard/products/new",
+              //    icon: Package,
+            },
+            {
+              title: "Categories",
+              url: "/dashboard/categories",
+              //   icon: Package,
+            },
+          ],
         },
         {
           title: "Orders",

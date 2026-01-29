@@ -28,9 +28,12 @@ export function AppTitle() {
               onClick={() => setOpenMobile(false)}
               className="grid flex-1 text-start text-sm leading-tight"
             >
-              <span className="truncate">
-                <Logo variant={theme === "light" ? "primary" : "secondary"} />
-              </span>
+              <div className="truncate">
+                <Logo
+                  variant={theme === "light" ? "primary" : "secondary"}
+                  isImageOnly
+                />
+              </div>
             </Link>
             <ToggleSidebar />
           </div>

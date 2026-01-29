@@ -1,3 +1,1 @@
-import OrdersPage from "@/features/dashboard/pages/orders";
-
-export default OrdersPage;
+export { default } from "@/features/dashboard/pages/orders";

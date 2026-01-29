@@ -10,7 +10,7 @@ type HeaderProps = React.HTMLAttributes<HTMLElement> & {
 
 export default function AppHeader({
   className,
-  fixed,
+  fixed = true,
   children,
   ...props
 }: HeaderProps) {
