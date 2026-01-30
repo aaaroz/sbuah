@@ -3,16 +3,18 @@ import { z } from "zod";
 // -------------------------
 // Product Base Schema
 // -------------------------
+export const productStatusEnum = z.enum(["ACTIVE", "ARCHIVED", "DRAFT"]);
+
 export const productSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1, "Name is required"),
+  id: z.uuid(),
+  name: z.string().min(1, "Nama produk wajib diisi"),
   description: z.string().nullable(),
-  price: z.number().positive(),
+  price: z.number().positive("Harga harus lebih dari 0"),
   imageUrl: z.url().nullable().optional(),
-  isActive: z.boolean().default(true),
+  status: productStatusEnum.default("ACTIVE"),
+  categoryId: z.uuid().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  categoryId: z.uuid().nullable(),
 });
 
 // Schema for create
@@ -26,6 +28,11 @@ export const createProductSchema = productSchema.omit({
 export const updateProductSchema = productSchema.partial().omit({
   createdAt: true,
   updatedAt: true,
+});
+
+export const bulkUpdateStatusSchema = z.object({
+  ids: z.array(z.uuid()),
+  status: productStatusEnum.default("ACTIVE"),
 });
 
 // Schema for fetching all products
@@ -45,3 +52,4 @@ export const singleProductIdSchema = productSchema.pick({ id: true });
 // -------------------------
 export type CreateProduct = z.infer<typeof createProductSchema>;
 export type UpdateProduct = z.infer<typeof updateProductSchema>;
+export type ProductsStatusEnum = z.infer<typeof productStatusEnum>;

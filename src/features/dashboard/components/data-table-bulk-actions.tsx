@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { type Table } from "@tanstack/react-table";
-import { Trash2, CircleArrowUp, Check, Cross, X } from "lucide-react";
+import { Trash2, CircleArrowUp, Check, X } from "lucide-react";
 import { toast } from "sonner";
-import { sleep } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,6 +17,11 @@ import {
 import { DataTableBulkActions as BulkActionsToolbar } from "@/components/data-table";
 import { type Product } from "@/lib/types/product";
 import { ProductsMultiDeleteDialog } from "./products-multi-delete-dialog";
+import {
+  type ProductsStatusEnum,
+  productStatusEnum,
+} from "@/lib/schemas/product/product-schema";
+import { useProducts } from "./products-provider";
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>;
@@ -29,16 +33,22 @@ export function DataTableBulkActions<TData>({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const selectedRows = table.getFilteredSelectedRowModel().rows;
 
-  const handleBulkStatusChange = (status: string) => {
-    const selectedTasks = selectedRows.map((row) => row.original as Product);
-    toast.promise(sleep(2000), {
-      loading: "Updating status...",
-      success: () => {
-        table.resetRowSelection();
-        return `Status updated to "${status}" for ${selectedTasks.length} product${selectedTasks.length > 1 ? "s" : ""}.`;
+  const { updateBulkStatusProductMutation } = useProducts();
+
+  const handleBulkStatusChange = (status: ProductsStatusEnum) => {
+    const selectedProducts = selectedRows.map((row) => row.original as Product);
+    const ids = selectedProducts.map((item) => item.id);
+    toast.promise(
+      updateBulkStatusProductMutation.mutateAsync({ ids, status }),
+      {
+        loading: "Mengubah status...",
+        success: () => {
+          table.resetRowSelection();
+          return `Status diubah menjadi "${status === "ACTIVE" ? "Aktif" : "Tidak Aktif"}" untuk ${selectedProducts.length} produk yang dipilih.`;
+        },
+        error: "Error menyimpan status produk.",
       },
-      error: "Error",
-    });
+    );
     table.resetRowSelection();
   };
 
@@ -68,13 +78,13 @@ export function DataTableBulkActions<TData>({
           <DropdownMenuContent sideOffset={14}>
             {[
               {
-                value: "innactive",
-                label: "Innactive",
+                value: productStatusEnum.enum.ARCHIVED,
+                label: "Tidak Aktif",
                 icon: X,
               },
               {
-                value: "active",
-                label: "Active",
+                value: productStatusEnum.enum.ACTIVE,
+                label: "Aktif",
                 icon: Check,
               },
             ].map((status) => (
@@ -100,14 +110,14 @@ export function DataTableBulkActions<TData>({
               onClick={() => setShowDeleteConfirm(true)}
               className="size-8"
               aria-label="Delete selected products"
-              title="Delete selected products"
+              title="Hapus produk yang dipilih"
             >
               <Trash2 />
-              <span className="sr-only">Delete selected products</span>
+              <span className="sr-only">Hapus produk yang dipilih</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Delete selected products</p>
+            <p>Hapus produk yang dipilih</p>
           </TooltipContent>
         </Tooltip>
       </BulkActionsToolbar>

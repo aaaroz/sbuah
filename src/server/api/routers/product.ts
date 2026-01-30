@@ -7,9 +7,12 @@ import {
   createProductSchema,
   getAllProductSchema,
   singleProductIdSchema,
+  bulkUpdateStatusSchema,
   updateProductSchema,
 } from "@/lib/schemas/product/product-schema";
 import { type Prisma } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import { deleteUploadThingFile, getUploadthingKey } from "@/lib/utils";
 
 export const productRouter = createTRPCRouter({
   // ---------------------------
@@ -25,6 +28,7 @@ export const productRouter = createTRPCRouter({
           price: input.price,
           imageUrl: input.imageUrl,
           categoryId: input.categoryId,
+          status: input.status,
         },
       });
     }),
@@ -115,14 +119,123 @@ export const productRouter = createTRPCRouter({
       });
     }),
 
+  bulkUpdateStatus: privateProcedure
+    .input(bulkUpdateStatusSchema)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.product.updateMany({
+        where: {
+          id: { in: input.ids },
+        },
+        data: {
+          status: input.status,
+        },
+      });
+    }),
+
   // ---------------------------
   // DELETE PRODUCT
   // ---------------------------
-  remove: privateProcedure
+  delete: privateProcedure
     .input(singleProductIdSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.product.delete({
+      const product = await ctx.db.product.findUnique({
+        where: { id: input.id },
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      });
+
+      if (!product) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Produk tidak ditemukan.",
+        });
+      }
+
+      const hasOrders = await ctx.db.orderItem.findFirst({
+        where: { productId: input.id },
+        select: { id: true },
+      });
+
+      if (hasOrders) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Produk sudah pernah dipesan dan tidak dapat dihapus",
+        });
+      }
+
+      await ctx.db.product.delete({
         where: { id: input.id },
       });
+
+      if (product.imageUrl) {
+        const key = getUploadthingKey(product.imageUrl);
+        if (key) {
+          deleteUploadThingFile(key).catch(console.error);
+        }
+      }
+
+      return {
+        name: product.name,
+      };
+    }),
+
+  bulkDelete: privateProcedure
+    .input(bulkUpdateStatusSchema.omit({ status: true }))
+    .mutation(async ({ ctx, input }) => {
+      const { ids } = input;
+
+      const products = await ctx.db.product.findMany({
+        where: { id: { in: ids } },
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      });
+
+      if (products.length < 1) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Produk tidak ditemukan.",
+        });
+      }
+
+      const usedInOrders = await ctx.db.orderItem.findFirst({
+        where: {
+          productId: { in: ids },
+        },
+        select: {
+          productId: true,
+        },
+      });
+
+      if (usedInOrders) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Salah satu atau beberapa produk yang dipilih sudah pernah dipesan dan tidak dapat dihapus.",
+        });
+      }
+      const result = await ctx.db.product.deleteMany({
+        where: {
+          id: { in: ids },
+        },
+      });
+
+      for (const product of products) {
+        if (product.imageUrl) {
+          const key = getUploadthingKey(product.imageUrl);
+          if (key) {
+            deleteUploadThingFile(key).catch(console.error);
+          }
+        }
+      }
+
+      return {
+        deletedCount: result.count,
+      };
     }),
 });

@@ -28,7 +28,7 @@ const config = {
       },
       {
         protocol: "https",
-        hostname: "utfs.io",
+        hostname: "*.ufs.sh",
         port: "",
       },
     ],

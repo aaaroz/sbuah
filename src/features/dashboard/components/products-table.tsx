@@ -106,10 +106,6 @@ export function ProductsTable() {
   const pageCount = table.getPageCount();
 
   useEffect(() => {
-    // if (data?.pagination.totalPages) {
-    //   ensurePageInRange(pageCount);
-    // }
-
     ensurePageInRange(pageCount);
   }, [pageCount, ensurePageInRange]);
 

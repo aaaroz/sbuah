@@ -1,4 +1,6 @@
 export * from "./cn";
+export * from "./get-uploadthing-key";
+export * from "./delete-ut-file";
 export * from "./to-fetch-headers";
 export * from "./sleep";
 export * from "./get-page-number";

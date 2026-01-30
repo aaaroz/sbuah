@@ -5,6 +5,7 @@ import { DataTableColumnHeader } from "@/components/data-table";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { type Product } from "@/lib/types/product";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { type ProductsStatusEnum } from "@/lib/schemas/product/product-schema";
 
 export const productsColumns: ColumnDef<Product>[] = [
   // ====================
@@ -129,17 +130,29 @@ export const productsColumns: ColumnDef<Product>[] = [
   // Active status
   // ====================
   {
-    accessorKey: "isActive",
+    accessorKey: "status",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
     meta: { className: "ps-1", tdClassName: "ps-4" },
     cell: ({ row }) => {
-      const isActive = row.getValue<boolean>("isActive");
+      const status = row.getValue<ProductsStatusEnum>("status");
 
       return (
-        <Badge variant={isActive ? "default" : "secondary"}>
-          {isActive ? "Active" : "Inactive"}
+        <Badge
+          variant={
+            status === "ACTIVE"
+              ? "default"
+              : status === "DRAFT"
+                ? "outline"
+                : "secondary"
+          }
+        >
+          {status === "ACTIVE"
+            ? "Aktif"
+            : status === "DRAFT"
+              ? "Draft"
+              : "Tidak Aktif"}
         </Badge>
       );
     },

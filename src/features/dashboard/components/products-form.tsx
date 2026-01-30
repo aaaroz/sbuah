@@ -24,7 +24,7 @@ import {
   createProductSchema,
   updateProductSchema,
 } from "@/lib/schemas/product/product-schema";
-import { api } from "@/lib/utils";
+import { api, getUploadthingKey } from "@/lib/utils";
 import {
   Dropzone,
   DropZoneArea,
@@ -36,14 +36,20 @@ import {
   DropzoneTrigger,
   useDropzone,
 } from "@/components/ui/dropzone";
-import { CloudUploadIcon, SaveAllIcon, Trash2Icon } from "lucide-react";
+import {
+  CloudUploadIcon,
+  SaveAllIcon,
+  SaveIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { MenuCard } from "@/components/commons/menu-card";
 import { Button } from "@/components/ui/button";
 import { useUploadThing } from "@/hooks/use-uploadthing";
 import { useEffect, useRef, useState } from "react";
-import { type ClientUploadedFileData } from "uploadthing/types";
 import { useRouter } from "next/navigation";
+import { deleteUploadThingFile } from "@/lib/utils/delete-ut-file";
+import { useProducts } from "./products-provider";
 
 type ProductsFormProps = {
   mode: "create" | "edit";
@@ -61,17 +67,10 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
 
   const { startUpload, isUploading } = useUploadThing("productImage");
 
-  const createProduct = api.product.create.useMutation({
-    onSuccess: () => {
-      router.push("/dashboard/products");
-    },
-  });
-
-  const updateProduct = api.product.update.useMutation({
-    onSuccess: () => {
-      router.push("/dashboard/products");
-    },
-  });
+  const {
+    createProductMutation: createProduct,
+    updateProductMutation: updateProduct,
+  } = useProducts();
 
   const { data: categories, isLoading } = api.category.getAll.useQuery();
 
@@ -88,7 +87,7 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
             price: 0,
             imageUrl: null,
             categoryId: null,
-            isActive: true,
+            status: "ACTIVE",
           },
   });
 
@@ -135,43 +134,41 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
       : (initialData?.price ?? 0);
 
   const previewImage =
-    dropzone.fileStatuses[0]?.result ??
+    dropzone.fileStatuses.at(-1)?.result ??
     "https://placehold.co/600x400?text=Preview";
 
   async function onSubmit(values: FormValues) {
     try {
-      if (createProduct.isPending || updateProduct.isPending) {
-        return;
-      }
+      if (createProduct.isPending || updateProduct.isPending) return;
+      console.log({ values });
 
-      let imageUrl = values.imageUrl;
+      const previousImageUrl = values.imageUrl ?? null;
+      let imageUrl = previousImageUrl;
 
       if (imageFile) {
-        toast.promise(startUpload([imageFile]), {
-          loading: "Mengunggah gambar...",
-          success: (
-            data:
-              | ClientUploadedFileData<{
-                  uploadedBy: string;
-                }>[]
-              | undefined,
-          ) => {
-            if (!data?.[0]?.ufsUrl) {
-              throw new Error("Gagal mengunggah gambar.");
-            }
+        const uploadPromise = startUpload([imageFile]);
 
-            imageUrl = data[0].ufsUrl;
-            return "Berhasil mengunggah gambar.";
-          },
+        toast.promise(uploadPromise, {
+          loading: "Mengunggah gambar...",
+          success: "Berhasil mengunggah gambar.",
           error: "Gagal mengunggah gambar.",
         });
-        // const uploaded = await startUpload([imageFile]);
-        //
-        // if (!uploaded?.[0]?.ufsUrl) {
-        //   throw new Error("Upload gagal");
-        // }
-        //
-        // imageUrl = uploaded[0].ufsUrl;
+
+        const data = await uploadPromise;
+
+        if (!data?.[0]?.ufsUrl) {
+          throw new Error("Gagal mengunggah gambar.");
+        }
+
+        imageUrl = data[0].ufsUrl;
+      }
+
+      const shouldDeleteOldImage =
+        imageFile && previousImageUrl && previousImageUrl !== imageUrl;
+
+      if (shouldDeleteOldImage) {
+        const key = getUploadthingKey(previousImageUrl);
+        if (key) deleteUploadThingFile(key).catch(console.error);
       }
 
       const payload = {
@@ -179,42 +176,35 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
         imageUrl,
       };
 
-      if (mode === "create") {
-        toast.promise(
-          createProduct.mutateAsync({
-            name: payload.name ?? "",
-            description: payload.description ?? "",
-            price: payload.price ?? 0,
-            imageUrl,
-            categoryId: payload.categoryId ?? null,
-          }),
-          {
-            loading: "Menambahkan produk...",
-            success: (data: { name: string }) => {
-              return `Produk dengan nama "${data.name}" berhasil ditambahkan.`;
-            },
-            error: "Gagal menambahkan produk.",
-          },
-        );
-      } else {
-        toast.promise(
-          updateProduct.mutateAsync({
-            id: initialData?.id ?? "",
-            name: payload.name ?? "",
-            description: payload.description ?? "",
-            price: payload.price ?? 0,
-            imageUrl,
-            categoryId: payload.categoryId ?? null,
-          }),
-          {
-            loading: "Menyimpan produk...",
-            success: (data: { name: string }) => {
-              return `Produk dengan nama "${data.name}" berhasil disimpan.`;
-            },
-            error: "Gagal menyimpan produk.",
-          },
-        );
-      }
+      const mutate =
+        mode === "create"
+          ? createProduct.mutateAsync({
+              name: payload.name ?? "",
+              description: payload.description ?? "",
+              price: payload.price ?? 0,
+              imageUrl,
+              categoryId: payload.categoryId ?? null,
+              status: payload.status,
+            })
+          : updateProduct.mutateAsync({
+              id: initialData?.id ?? "",
+              name: payload.name ?? "",
+              description: payload.description ?? "",
+              price: payload.price ?? 0,
+              imageUrl,
+              categoryId: payload.categoryId ?? null,
+              status: payload.status,
+            });
+
+      toast.promise(mutate, {
+        loading:
+          mode === "create" ? "Menambahkan produk..." : "Menyimpan produk...",
+        success: (data: { name: string }) =>
+          `Produk "${data.name}" berhasil disimpan.`,
+        error: "Gagal menyimpan produk.",
+      });
+
+      router.push("/dashboard/products");
     } catch (err) {
       console.error(err);
       toast.error("Gagal menyimpan produk");
@@ -250,7 +240,7 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
       price: initialData.price,
       imageUrl: initialData.imageUrl,
       categoryId: initialData.categoryId,
-      isActive: initialData.isActive,
+      status: initialData.status,
     });
   }, [mode, initialData, form]);
 
@@ -342,37 +332,41 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
                 </div>
 
                 <DropzoneFileList className="grid grid-cols-1 gap-3 p-0">
-                  {dropzone.fileStatuses.map((file) => (
-                    <DropzoneFileListItem
-                      key={file.id}
-                      file={file}
-                      className="overflow-hidden rounded-md bg-secondary p-0 shadow-sm"
-                    >
-                      {file.status === "pending" && (
-                        <div className="aspect-video animate-pulse bg-black/20" />
-                      )}
+                  {dropzone.fileStatuses.map((file, i) => {
+                    if (i !== dropzone.fileStatuses.length - 1) return null;
 
-                      {file.status === "success" && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={file.result}
-                          alt={file.fileName}
-                          className="aspect-video object-cover"
-                        />
-                      )}
+                    return (
+                      <DropzoneFileListItem
+                        key={file.id}
+                        file={file}
+                        className="overflow-hidden rounded-md bg-secondary p-0 shadow-sm"
+                      >
+                        {file.status === "pending" && (
+                          <div className="aspect-video animate-pulse bg-black/20" />
+                        )}
 
-                      <div className="flex items-center justify-between p-2 pl-4">
-                        <p className="truncate text-sm">{file.fileName}</p>
+                        {file.status === "success" && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={file.result}
+                            alt={file.fileName}
+                            className="aspect-video object-cover"
+                          />
+                        )}
 
-                        <DropzoneRemoveFile
-                          variant="ghost"
-                          className="shrink-0"
-                        >
-                          <Trash2Icon className="size-4" />
-                        </DropzoneRemoveFile>
-                      </div>
-                    </DropzoneFileListItem>
-                  ))}
+                        <div className="flex items-center justify-between p-2 pl-4">
+                          <p className="truncate text-sm">{file.fileName}</p>
+
+                          <DropzoneRemoveFile
+                            variant="ghost"
+                            className="shrink-0"
+                          >
+                            <Trash2Icon className="size-4" />
+                          </DropzoneRemoveFile>
+                        </div>
+                      </DropzoneFileListItem>
+                    );
+                  })}
                 </DropzoneFileList>
               </Dropzone>
             </div>
@@ -402,18 +396,40 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
             ))}
           </div>
         </div>
-        <Button
-          onClick={() => form.handleSubmit(onSubmit)()}
-          disabled={
-            createProduct.isPending ||
-            updateProduct.isPending ||
-            isLoading ||
-            isUploading
-          }
-        >
-          <SaveAllIcon />
-          <span>Simpan {mode === "create" ? "Produk" : "Perubahan"}</span>
-        </Button>
+        <div className="flex flex-grow items-center gap-4">
+          {mode === "create" && (
+            <Button
+              onClick={async () => {
+                form.setValue("status", "DRAFT");
+                await form.handleSubmit(onSubmit)();
+              }}
+              disabled={
+                createProduct.isPending ||
+                updateProduct.isPending ||
+                isLoading ||
+                isUploading
+              }
+              variant="secondary"
+              className="w-full"
+            >
+              <SaveIcon />
+              <span>Simpan Sebagai Draft</span>
+            </Button>
+          )}
+          <Button
+            onClick={() => form.handleSubmit(onSubmit)()}
+            disabled={
+              createProduct.isPending ||
+              updateProduct.isPending ||
+              isLoading ||
+              isUploading
+            }
+            className="w-full"
+          >
+            <SaveAllIcon />
+            <span>Simpan {mode === "create" ? "Produk" : "Perubahan"}</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

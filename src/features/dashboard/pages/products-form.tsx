@@ -11,6 +11,7 @@ import { ProductsPrimaryButtons } from "../components/products-primary-button";
 import { useRouter } from "next/router";
 import { ProductsForm } from "../components/products-form";
 import { api } from "@/lib/utils";
+import { ProductsProvider } from "../components/products-provider";
 
 const PAGE_CONTENT = {
   ADD: {
@@ -36,45 +37,49 @@ const ProductsFormPage = () => {
     },
   );
   return (
-    <DashboardPageLayout>
-      <HeadMetaData
-        title="Products"
-        metaDescription="Manage all your listed products in one place."
-      />
-      <AppHeader>
-        <Search />
-        <div className="ms-auto flex items-center space-x-4">
-          <ThemeSwitch />
-          <ProfileDropdown />
-        </div>
-      </AppHeader>
-      <Main className="flex flex-1 flex-col gap-4 sm:gap-6">
-        <div className="flex flex-wrap items-end justify-between gap-2">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">
-              {id === "new" ? PAGE_CONTENT.ADD.title : PAGE_CONTENT.EDIT.title}
-            </h1>
-            <p className="text-muted-foreground">
-              {id === "new"
-                ? PAGE_CONTENT.ADD.description
-                : PAGE_CONTENT.EDIT.description}
-            </p>
-          </div>
-          <ProductsPrimaryButtons isFormPage />
-        </div>
-        <ProductsForm
-          mode={id === "new" ? "create" : "edit"}
-          initialData={{
-            id: data?.id ?? "",
-            name: data?.name,
-            description: data?.description,
-            price: data?.price,
-            imageUrl: data?.imageUrl,
-            categoryId: data?.categoryId,
-          }}
+    <ProductsProvider>
+      <DashboardPageLayout>
+        <HeadMetaData
+          title="Products"
+          metaDescription="Manage all your listed products in one place."
         />
-      </Main>
-    </DashboardPageLayout>
+        <AppHeader>
+          <Search />
+          <div className="ms-auto flex items-center space-x-4">
+            <ThemeSwitch />
+            <ProfileDropdown />
+          </div>
+        </AppHeader>
+        <Main className="flex flex-1 flex-col gap-4 sm:gap-6">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold tracking-tight">
+                {id === "new"
+                  ? PAGE_CONTENT.ADD.title
+                  : PAGE_CONTENT.EDIT.title}
+              </h1>
+              <p className="text-muted-foreground">
+                {id === "new"
+                  ? PAGE_CONTENT.ADD.description
+                  : PAGE_CONTENT.EDIT.description}
+              </p>
+            </div>
+            <ProductsPrimaryButtons isFormPage />
+          </div>
+          <ProductsForm
+            mode={id === "new" ? "create" : "edit"}
+            initialData={{
+              id: data?.id ?? "",
+              name: data?.name,
+              description: data?.description,
+              price: data?.price,
+              imageUrl: data?.imageUrl,
+              categoryId: data?.categoryId,
+            }}
+          />
+        </Main>
+      </DashboardPageLayout>
+    </ProductsProvider>
   );
 };
 

@@ -9,6 +9,15 @@
 * 🟢 You can import this file directly.
 */
 
+export const ProductStatus = {
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED',
+  DRAFT: 'DRAFT'
+} as const
+
+export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
+
+
 export const OrderStatus = {
   PENDING: 'PENDING',
   PAID: 'PAID',

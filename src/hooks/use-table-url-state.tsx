@@ -107,6 +107,7 @@ export function useTableUrlState(params: UseTableUrlStateParams) {
       { shallow: true },
     );
   };
+
   // ---------- Column filters ----------
   const initialColumnFilters: ColumnFiltersState = useMemo(() => {
     const collected: ColumnFiltersState = [];
@@ -144,6 +145,10 @@ export function useTableUrlState(params: UseTableUrlStateParams) {
   const [columnFilters, setColumnFilters] =
     useState<ColumnFiltersState>(initialColumnFilters);
 
+  // useEffect(() => {
+  //   setColumnFilters(initialColumnFilters);
+  // }, [initialColumnFilters]);
+
   // ---------- Pagination ----------
   const pagination: PaginationState = useMemo(() => {
     const page = Number(search[pageKey] ?? defaultPage);
@@ -158,13 +163,16 @@ export function useTableUrlState(params: UseTableUrlStateParams) {
   const onPaginationChange: OnChangeFn<PaginationState> = (updater) => {
     const next = typeof updater === "function" ? updater(pagination) : updater;
 
+    const nextPage = next.pageIndex + 1;
+    const nextPageSize = next.pageSize;
+
+    console.log("onPaginationChange", next);
     navigate({
       search: (prev) => ({
         ...prev,
-        [pageKey]:
-          next.pageIndex + 1 === defaultPage ? undefined : next.pageIndex + 1,
+        [pageKey]: nextPage <= defaultPage ? undefined : nextPage,
         [pageSizeKey]:
-          next.pageSize === defaultPageSize ? undefined : next.pageSize,
+          nextPageSize === defaultPageSize ? undefined : nextPageSize,
       }),
     });
   };
@@ -186,6 +194,7 @@ export function useTableUrlState(params: UseTableUrlStateParams) {
           const value = trimGlobal ? next.trim() : next;
           setGlobalFilter(value);
 
+          console.log("onGlobalFilterChange", value);
           navigate({
             search: (prev) => ({
               ...prev,
@@ -202,7 +211,6 @@ export function useTableUrlState(params: UseTableUrlStateParams) {
       typeof updater === "function" ? updater(columnFilters) : updater;
 
     setColumnFilters(next);
-    console.log("next column filters:", next);
 
     const patch: UrlQuery = {};
 
@@ -211,18 +219,9 @@ export function useTableUrlState(params: UseTableUrlStateParams) {
       const serialize = cfg.serialize ?? ((v) => v);
 
       if (cfg.type === "string") {
-        const value = typeof found?.value === "string" ? found.value : "";
-        patch[cfg.searchKey] =
-          value.trim() !== "" ? toUrlValue(serialize(value)) : undefined;
-
-        patch[cfg.searchKey] =
-          cfg.type === "string"
-            ? value.trim()
-              ? toUrlValue(serialize(value))
-              : undefined
-            : value.length
-              ? toUrlValue(serialize(value))
-              : undefined;
+        const value =
+          typeof found?.value === "string" ? found.value.trim() : "";
+        patch[cfg.searchKey] = value ? toUrlValue(serialize(value)) : undefined;
       } else {
         const value = Array.isArray(found?.value) ? found.value : [];
         patch[cfg.searchKey] =
@@ -230,10 +229,11 @@ export function useTableUrlState(params: UseTableUrlStateParams) {
       }
     }
 
+    console.log("onColumnFiltersChange", { columnFiltersCfg, patch, next });
     navigate({
       search: (prev) => ({
         ...prev,
-        [pageKey]: undefined,
+        [pageKey]: undefined, // reset pagination
         ...patch,
       }),
     });
@@ -241,6 +241,8 @@ export function useTableUrlState(params: UseTableUrlStateParams) {
 
   const ensurePageInRange = (pageCount: number) => {
     const page = Number(search[pageKey] ?? defaultPage);
+
+    console.log("ensurePageInRange", { page, pageCount });
     if (pageCount > 0 && page > pageCount) {
       navigate({
         replace: true,

@@ -4,11 +4,13 @@ import { useState } from "react";
 import { type Table } from "@tanstack/react-table";
 import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import { sleep } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ConfirmDialog } from "@/components/commons/confirm-dialog";
+import { useProducts } from "./products-provider";
+import { TRPCClientError } from "@trpc/client";
+import { type Product } from "@/lib/types/product";
 
 type TaskMultiDeleteDialogProps<TData> = {
   open: boolean;
@@ -27,6 +29,9 @@ export function ProductsMultiDeleteDialog<TData>({
 
   const selectedRows = table.getFilteredSelectedRowModel().rows;
 
+  const selectedProducts = selectedRows.map((row) => row.original as Product);
+  const { bulkDeleteProductMutation } = useProducts();
+
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
       toast.error(`Please type "${CONFIRM_WORD}" to confirm.`);
@@ -35,17 +40,27 @@ export function ProductsMultiDeleteDialog<TData>({
 
     onOpenChange(false);
 
-    toast.promise(sleep(2000), {
-      loading: "Deleting Products...",
-      success: () => {
-        setValue("");
-        table.resetRowSelection();
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? "products" : "product"
-        }`;
+    toast.promise(
+      bulkDeleteProductMutation.mutateAsync({
+        ids: selectedProducts.map((p) => p.id),
+      }),
+      {
+        loading: "Menghapus produk terpilih...",
+        success: () => {
+          setValue("");
+          table.resetRowSelection();
+          return `Berhasil menghapus ${selectedRows.length} produk yang dipilih.`;
+        },
+        error: (err: unknown) => {
+          console.error(err);
+
+          if (err instanceof TRPCClientError) {
+            return err.message;
+          }
+          return "Gagal menghapus produk.";
+        },
       },
-      error: "Error",
-    });
+    );
   };
 
   return (

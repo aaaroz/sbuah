@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "./generated/prisma"
@@ -9,21 +8,24 @@ datasource db {
 }
 
 model Product {
-  id          String   @id @default(uuid()) @db.Char(36)
+  id          String        @id @default(uuid()) @db.Char(36)
   name        String
   description String?
-  price       Decimal  @db.Decimal(10, 2)
+  price       Decimal       @db.Decimal(10, 2)
   imageUrl    String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      ProductStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   ratings ProductRating[]
   stats   ProductStats?
 
   categoryId String?
-  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   orderItems OrderItem[]
+
+  @@index([status])
+  @@index([categoryId])
 }
 
 model Category {
@@ -43,7 +45,7 @@ model ProductRating {
   createdAt  DateTime @default(now())
 
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductStats {
@@ -51,7 +53,13 @@ model ProductStats {
   avgRating   Decimal @db.Decimal(3, 2)
   reviewCount Int     @default(0)
 
-  product Product @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum ProductStatus {
+  ACTIVE
+  ARCHIVED
+  DRAFT
 }
 
 enum OrderStatus {
@@ -94,6 +102,9 @@ model Order {
   updatedAt DateTime @updatedAt
 
   items OrderItem[]
+
+  @@index([createdAt])
+  @@index([status])
 }
 
 model OrderItem {
@@ -103,13 +114,16 @@ model OrderItem {
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   name     String
   price    Decimal @db.Decimal(10, 2)
   imageUrl String?
   quantity Int
   note     String?
+
+  @@index([productId])
+  @@index([orderId])
 }
 
 model User {
@@ -127,8 +141,8 @@ model User {
   displayUsername String?
 
   @@unique([email])
-  @@map("user")
   @@unique([username])
+  @@map("user")
 }
 
 model Session {
