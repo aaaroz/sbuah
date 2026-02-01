@@ -7,11 +7,11 @@ import { Search } from "@/components/commons/search";
 import { ProfileDropdown } from "@/components/commons/profile-dropdown";
 import { ThemeSwitch } from "@/components/commons/theme-switch";
 import { Main } from "@/components/layouts/main";
-import { ProductsPrimaryButtons } from "../components/products-primary-button";
+import { ProductsPrimaryButtons } from "../components/products/products-primary-button";
 import { useRouter } from "next/router";
-import { ProductsForm } from "../components/products-form";
+import { ProductsForm } from "../components/products/products-form";
 import { api } from "@/lib/utils";
-import { ProductsProvider } from "../components/products-provider";
+import { ProductsProvider } from "../components/products/products-provider";
 
 const PAGE_CONTENT = {
   ADD: {
@@ -75,6 +75,7 @@ const ProductsFormPage = () => {
               price: data?.price,
               imageUrl: data?.imageUrl,
               categoryId: data?.categoryId,
+              status: data?.status,
             }}
           />
         </Main>

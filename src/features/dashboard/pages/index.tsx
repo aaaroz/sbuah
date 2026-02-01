@@ -13,9 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Overview } from "../components/dashboard-overview";
-import { RecentOrders } from "../components/dashboard-recent-order";
-import { DashboardStatCard } from "../components/dashboard-stat-card";
+import { Overview } from "../components/dashboard/dashboard-overview";
+import { RecentOrders } from "../components/dashboard/dashboard-recent-order";
+import { DashboardStatCard } from "../components/dashboard/dashboard-stat-card";
 import { api } from "@/lib/utils/api";
 
 const DashboardPage = () => {

@@ -50,6 +50,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { deleteUploadThingFile } from "@/lib/utils/delete-ut-file";
 import { useProducts } from "./products-provider";
+import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect";
 
 type ProductsFormProps = {
   mode: "create" | "edit";
@@ -140,7 +141,6 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
   async function onSubmit(values: FormValues) {
     try {
       if (createProduct.isPending || updateProduct.isPending) return;
-      console.log({ values });
 
       const previousImageUrl = values.imageUrl ?? null;
       let imageUrl = previousImageUrl;
@@ -213,7 +213,7 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
     }
   }
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (hasInitialized.current) return;
     if (mode !== "edit" || !initialData?.imageUrl) return;
 

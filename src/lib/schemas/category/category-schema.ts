@@ -24,10 +24,3 @@ export const updateCategorySchema = categorySchema.partial().omit({
 });
 
 export const singleCategoryIdSchema = categorySchema.pick({ id: true });
-
-// -------------------------
-// Category Types
-// -------------------------
-export type Category = z.infer<typeof categorySchema>;
-export type CreateCategory = z.infer<typeof createCategorySchema>;
-export type UpdateCategory = z.infer<typeof updateCategorySchema>;

@@ -26,12 +26,12 @@ export const sidebarData: SidebarData = {
           icon: LayoutDashboard,
         },
         {
-          title: "Products",
+          title: "Produk",
           // url: "/dashboard/products",
           icon: Package,
           items: [
             {
-              title: "View",
+              title: "List Produk",
               url: "/dashboard/products",
               //    icon: Package,
             },
@@ -41,7 +41,7 @@ export const sidebarData: SidebarData = {
               //    icon: Package,
             },
             {
-              title: "Categories",
+              title: "Kategori Produk",
               url: "/dashboard/categories",
               //   icon: Package,
             },

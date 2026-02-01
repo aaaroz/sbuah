@@ -6,9 +6,9 @@ import { Search } from "@/components/commons/search";
 import { ProfileDropdown } from "@/components/commons/profile-dropdown";
 import { ThemeSwitch } from "@/components/commons/theme-switch";
 import { Main } from "@/components/layouts/main";
-import { ProductsPrimaryButtons } from "../components/products-primary-button";
-import { ProductsTable } from "../components/products-table";
-import { ProductsProvider } from "../components/products-provider";
+import { ProductsPrimaryButtons } from "../components/products/products-primary-button";
+import { ProductsTable } from "../components/products/products-table";
+import { ProductsProvider } from "../components/products/products-provider";
 
 const ProductsPage = () => {
   return (

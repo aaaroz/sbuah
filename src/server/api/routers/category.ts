@@ -2,7 +2,7 @@ import {
   createCategorySchema,
   singleCategoryIdSchema,
   updateCategorySchema,
-} from "@/lib/schemas/category-schema";
+} from "@/lib/schemas/category/category-schema";
 import {
   createTRPCRouter,
   privateProcedure,
@@ -94,10 +94,10 @@ export const categoryRouter = createTRPCRouter({
   // ---------------------------
   // DELETE
   // ---------------------------
-  remove: privateProcedure
+  delete: privateProcedure
     .input(singleCategoryIdSchema)
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.product.delete({
+      return ctx.db.category.delete({
         where: { id: input.id },
       });
     }),

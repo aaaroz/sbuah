@@ -14,7 +14,8 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {  MenuSquareIcon } from "lucide-react";
+import { MenuSquareIcon } from "lucide-react";
+import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect";
 
 export const MenuWrapper = () => {
   const products = useProductStore((state) => state.products);
@@ -41,8 +42,7 @@ export const MenuWrapper = () => {
     limit: 6,
   });
 
-  // Initial load
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     setLoading(isLoading);
 
     if (error) {

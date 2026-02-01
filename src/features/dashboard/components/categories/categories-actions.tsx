@@ -1,5 +1,5 @@
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,12 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { type Category } from "@/lib/types/category";
+import { useCategories } from "./categories-provider";
 
 type CategoryActionsProps = {
   category: Category;
 };
 
-export function CategoriesActions({ category: _ }: CategoryActionsProps) {
+export function CategoriesActions({ category }: CategoryActionsProps) {
+  const { setCurrentCategory, setDialogOpen } = useCategories();
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -29,18 +31,23 @@ export function CategoriesActions({ category: _ }: CategoryActionsProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem
-        // onClick={() => {
-        //   router.push(`/dashboard/products/${product.id}`);
-        // }}
+          onClick={() => {
+            setCurrentCategory(category);
+            setDialogOpen("update");
+          }}
         >
           Edit
+          <DropdownMenuShortcut>
+            <Edit size={16} />
+          </DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-        // onClick={() => {
-        //   setCurrentRow(product as Product);
-        //   setDialogOpen("delete");
-        // }}
+          className="text-destructive focus:text-destructive"
+          onClick={() => {
+            setCurrentCategory(category);
+            setDialogOpen("delete");
+          }}
         >
           Delete
           <DropdownMenuShortcut>
