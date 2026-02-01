@@ -8,6 +8,7 @@ import {
   privateProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
+import z from "zod";
 
 export const categoryRouter = createTRPCRouter({
   // ---------------------------
@@ -27,10 +28,43 @@ export const categoryRouter = createTRPCRouter({
   // GET ALL
   // ---------------------------
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const categories = await ctx.db.category.findMany();
+    const categories = await ctx.db.category.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
 
     return categories;
   }),
+
+  getAllWithProducts: publicProcedure
+    .input(
+      z.object({
+        sort: z.enum(["asc", "desc"]).optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const categories = await ctx.db.category.findMany({
+        orderBy: {
+          name: input.sort ?? "asc",
+        },
+        select: {
+          id: true,
+          name: true,
+          products: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              imageUrl: true,
+            },
+          },
+        },
+      });
+
+      return categories;
+    }),
 
   // ---------------------------
   // GET ONE BY ID

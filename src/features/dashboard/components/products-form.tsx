@@ -396,7 +396,7 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
             ))}
           </div>
         </div>
-        <div className="flex flex-grow items-center gap-4">
+        <div className="flex items-center gap-4">
           {mode === "create" && (
             <Button
               onClick={async () => {

@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { type RouterOutputs } from "../utils/api";
 import { type Product } from "../types/product";
+import { Category } from "../types/category";
 
 type Pagination = RouterOutputs["product"]["getAll"]["pagination"];
-type Category = RouterOutputs["category"]["getAll"][number];
 
 interface ProductStore {
   products: Product[];
