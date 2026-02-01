@@ -86,7 +86,7 @@ export const CategoriesViews = () => {
         </Select>
       </div>
 
-      <Separator className="shadow-sm" />
+      <Separator className="shadow-xs" />
 
       <ul className="faded-bottom no-scrollbar grid gap-4 overflow-auto pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (

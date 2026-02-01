@@ -339,7 +339,7 @@ export function ProductsForm({ mode, initialData }: ProductsFormProps) {
                       <DropzoneFileListItem
                         key={file.id}
                         file={file}
-                        className="overflow-hidden rounded-md bg-secondary p-0 shadow-sm"
+                        className="overflow-hidden rounded-md bg-secondary p-0 shadow-xs"
                       >
                         {file.status === "pending" && (
                           <div className="aspect-video animate-pulse bg-black/20" />

@@ -33,7 +33,7 @@ export function OrderCard({
   const statusConfig = statusMap[status];
 
   return (
-    <div className="flex cursor-pointer items-center gap-4 rounded-lg p-2 transition-all duration-200 hover:bg-accent hover:shadow-sm">
+    <div className="flex cursor-pointer items-center gap-4 rounded-lg p-2 transition-all duration-200 hover:bg-accent hover:shadow-xs">
       <Avatar className="h-9 w-9">
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>

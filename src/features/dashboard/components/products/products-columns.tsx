@@ -144,7 +144,7 @@ export const productsColumns: ColumnDef<Product>[] = [
             status === "ACTIVE"
               ? "default"
               : status === "DRAFT"
-                ? "outline"
+                ? "outline-solid"
                 : "secondary"
           }
         >

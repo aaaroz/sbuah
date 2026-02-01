@@ -101,7 +101,7 @@ export const MenuWrapper = () => {
 
 function EmptyMenu() {
   return (
-    <Empty className="h-full bg-gradient-to-b from-muted/50 from-30% to-background">
+    <Empty className="h-full bg-linear-to-b from-muted/50 from-30% to-background">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <MenuSquareIcon />

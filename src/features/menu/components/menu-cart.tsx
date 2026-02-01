@@ -21,7 +21,7 @@ export const MenuCart = () => {
         </Link>
         <Button
           data-open={isOpen}
-          className="absolute -right-0 rounded-full p-0 transition-all duration-200 data-[open=false]:-top-12 data-[open=true]:-top-5 [&[data-open=false]>svg]:rotate-180"
+          className="absolute right-0 rounded-full p-0 transition-all duration-200 data-[open=false]:-top-12 data-[open=true]:-top-5 [&[data-open=false]>svg]:rotate-180"
           size="icon"
           onClick={() => setIsOpen(!isOpen)}
         >
