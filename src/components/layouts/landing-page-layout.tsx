@@ -8,7 +8,7 @@ export const LandingPageLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <main className="flex min-h-screen flex-col gap-8 bg-background px-4 pt-11">
+    <main className="bg-background flex min-h-screen flex-col gap-8 px-4 pt-11 lg:mx-auto lg:max-w-6xl">
       <Navbar />
       <div>{children}</div>
       <Footer />

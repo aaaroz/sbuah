@@ -18,7 +18,7 @@ export const WelcomeSection = ({ className }: Props) => {
     <>
       <div
         className={cn(
-          "container flex flex-col gap-8 text-left text-xl font-bold text-rose-950 dark:text-foreground md:gap-11 md:text-3xl",
+          "dark:text-foreground flex flex-col gap-8 text-left text-xl font-bold text-rose-950 md:gap-11 md:text-3xl",
           className,
         )}
       >
@@ -45,7 +45,7 @@ export const WelcomeSection = ({ className }: Props) => {
             ({ imageUrl, name, description, stats, id, price }) => (
               <CarouselItem
                 key={id}
-                className="-pl-1.5 basis-1/2 p-1 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 2xl:basis-1/6"
+                className="-pl-1.5 basis-1/2 p-1 sm:basis-1/3 md:basis-1/4 xl:basis-1/5"
               >
                 <MenuCard
                   id={id}

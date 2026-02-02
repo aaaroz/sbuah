@@ -10,7 +10,7 @@ const MenuPage = () => {
   return (
     <LandingPageLayout>
       <HeadMetaData title="Menu Spesial" />
-      <div className="container mt-4 flex flex-col gap-14 md:gap-16">
+      <div className="mt-4 flex flex-col gap-14 md:gap-16">
         <ImageHeader imageUrl="/menu.png" isMenuPage />
         <MenuFilter />
         <MenuWrapper />

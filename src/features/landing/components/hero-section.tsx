@@ -12,7 +12,7 @@ const lemon = Lemon({ weight: "400", subsets: ["latin"] });
 export const HeroSection = () => {
   const { theme } = useTheme();
   return (
-    <section className="container overflow-hidden rounded-2xl">
+    <section className="overflow-hidden rounded-2xl">
       <div className="relative flex flex-col items-center gap-14 rounded-2xl bg-rose-950 pt-16 text-white">
         <Logo
           variant="secondary"
@@ -54,7 +54,7 @@ const WaveSVG = ({ fill }: { fill?: string }) => {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1440 320"
-      className="absolute bottom-0 right-0 z-10 w-full scale-105 object-fill"
+      className="absolute right-0 bottom-0 z-10 w-full scale-105 object-fill"
     >
       <path
         fill={fill}

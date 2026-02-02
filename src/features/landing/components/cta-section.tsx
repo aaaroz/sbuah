@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export const CtaSection = () => {
   return (
-    <div className="container relative flex w-full flex-col rounded-2xl bg-[#E51975] px-6 pt-8 text-white md:pb-8">
+    <div className="relative flex w-full flex-col rounded-2xl bg-[#E51975] px-6 pt-8 text-white md:pb-8">
       <div className="space-y-3">
         <h1 className="text-lg font-bold md:w-3/5 md:text-2xl">
           UDAH SIAP UNTUK MENDAPATKAN KESEGARAN TIADA TARA?

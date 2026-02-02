@@ -9,7 +9,7 @@ const AboutPage = () => {
   return (
     <LandingPageLayout>
       <HeadMetaData title="Tentang Kami" />
-      <div className="container mt-4 flex flex-col gap-14 md:gap-16">
+      <div className="mt-4 flex flex-col gap-14 md:gap-16">
         <ImageHeader imageUrl="/about-us.png" />
         <AboutContent />
         <AboutCTA />

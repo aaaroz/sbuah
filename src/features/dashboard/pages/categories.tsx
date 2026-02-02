@@ -25,7 +25,7 @@ const CategoriesPage = () => {
             <ProfileDropdown />
           </div>
         </AppHeader>
-        <Main fixed>
+        <Main fixed className="relative">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div className="space-y-2">
               <h1 className="text-2xl font-bold tracking-tight">Categories</h1>

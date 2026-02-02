@@ -9,7 +9,7 @@ const ContactPage = () => {
   return (
     <LandingPageLayout>
       <HeadMetaData title="Kontak Kami" />
-      <div className="container mt-4 flex flex-col gap-14 md:gap-16">
+      <div className="mt-4 flex flex-col gap-14 md:gap-16">
         <ImageHeader imageUrl="/contact-us.png" />
         <ContactAddress />
         <ContactForm />

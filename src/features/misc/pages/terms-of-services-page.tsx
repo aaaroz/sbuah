@@ -8,7 +8,7 @@ const TermsOfServicesPage = () => {
   return (
     <LandingPageLayout>
       <HeadMetaData title="Syarat & Ketentuan" />
-      <div className="container mt-4 flex flex-col gap-14 md:gap-16">
+      <div className="mt-4 flex flex-col gap-14 md:gap-16">
         <ImageHeader imageUrl="/tos.png" />
         <TermsOfServicesContent />
       </div>

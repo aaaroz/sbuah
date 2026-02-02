@@ -9,7 +9,7 @@ const GuideAndFAQPage = () => {
   return (
     <LandingPageLayout>
       <HeadMetaData title="Petunjuk & Pertanyaan" />
-      <div className="container mt-4 flex flex-col gap-14 md:gap-16">
+      <div className="mt-4 flex flex-col gap-14 md:gap-16">
         <ImageHeader imageUrl="/faq.png" />
         <GuideAndFAQContent />
         <GuideAndFAQOtherQuestion />

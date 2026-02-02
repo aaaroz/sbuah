@@ -8,7 +8,7 @@ const CartPage = () => {
   return (
     <LandingPageLayout>
       <HeadMetaData title="Keranjang Belanja" />
-      <div className="container mt-4 flex flex-col gap-14 md:gap-16">
+      <div className="mt-4 flex flex-col gap-14 md:gap-16">
         <ImageHeader imageUrl="/keranjang.png" />
         <CartWrapper />
       </div>

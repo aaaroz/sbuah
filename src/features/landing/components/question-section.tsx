@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export const QuestionSection = () => {
   return (
-    <div className="container grid grid-cols-1 gap-8 text-white md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-8 text-white md:grid-cols-2">
       <div className="flex w-full flex-col justify-between gap-6 rounded-2xl bg-[#E51975] px-6 pt-8">
         <div className="space-y-3">
           <h1 className="text-lg font-bold md:text-2xl">Apa Itu S{"'"}BUAH?</h1>
