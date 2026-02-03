@@ -3,6 +3,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated/prisma/client";
 import { env } from "@/env";
+import { orderStatusMap, orderStatusRank } from "@/lib/data/order";
 
 const adapter = new PrismaPg({
   connectionString: env.DATABASE_URL,
@@ -21,6 +22,11 @@ async function resetData() {
   await prisma.productStats.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
+
+  // reset order table increment number
+  await prisma.$executeRawUnsafe(`
+  TRUNCATE TABLE "Order" RESTART IDENTITY CASCADE;
+`);
 
   console.log("🧹 Reset completed");
 }
@@ -277,13 +283,17 @@ async function seedRatingsAndStats(productId: string, productName: string) {
   });
 }
 
+type OrderStatus = keyof typeof orderStatusMap;
+
 async function seedOrders(products: any[]) {
   console.log("🌱 Seeding orders...");
 
-  const randomItem = <T>(arr: T[]) =>
-    arr[Math.floor(Math.random() * arr.length)];
+  const randomItem = <T>(arr: readonly T[]): T =>
+    arr[Math.floor(Math.random() * arr.length)]!;
 
-  for (let i = 0; i < 10; i++) {
+  const STATUSES = Object.keys(orderStatusMap) as readonly OrderStatus[];
+
+  for (let i = 0; i < 25; i++) {
     const selected = [...products]
       .sort(() => 0.5 - Math.random())
       .slice(0, Math.floor(Math.random() * 3) + 1);
@@ -304,18 +314,31 @@ async function seedOrders(products: any[]) {
 
     const deliveryFee = Math.random() > 0.5 ? 5000 : 0;
 
+    const status = randomItem(STATUSES);
+
     await prisma.order.create({
       data: {
         buyerName: `Customer ${i + 1}`,
         phoneNumber: `08${Math.floor(100000000 + Math.random() * 900000000)}`,
         email: Math.random() > 0.5 ? `customer${i + 1}@mail.com` : null,
         note: Math.random() > 0.6 ? "Tolong cepat ya" : null,
-        paymentMethod: randomItem(["CASH", "TRANSFER"]) ?? "CASH",
-        purchaseMethod: randomItem(["PICK_UP", "DELIVERY"]) ?? "PICK_UP",
-        status: randomItem(["PENDING", "PAID", "COMPLETED"]),
+        address:
+          Math.random() > 0.3
+            ? "lorem ipsum dolor sit amet, consectetur adipiscing elit"
+            : null,
+
+        paymentMethod: randomItem(["CASH", "TRANSFER"] as const),
+        purchaseMethod: randomItem(["PICK_UP", "DELIVERY"] as const),
+
+        status,
+        statusRank: orderStatusRank[status],
+
         subtotal,
         totalAmount: subtotal + deliveryFee,
-        items: { create: items },
+
+        items: {
+          create: items,
+        },
       },
     });
   }

@@ -1,8 +1,8 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
-import { postRouter } from "@/server/api/routers/post";
-import { productRouter } from "@/server/api/routers/product";
-import { categoryRouter } from "@/server/api/routers/category";
 import { dashboardRouter } from "./routers/dashboard";
+import { orderRouter } from "./routers/order";
+import { productRouter } from "./routers/product";
+import { categoryRouter } from "./routers/category";
 
 /**
  * This is the primary router for your server.
@@ -10,7 +10,7 @@ import { dashboardRouter } from "./routers/dashboard";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
+  order: orderRouter,
   product: productRouter,
   category: categoryRouter,
   dashboard: dashboardRouter,

@@ -6,6 +6,7 @@ import { Search } from "@/components/commons/search";
 import { ProfileDropdown } from "@/components/commons/profile-dropdown";
 import { ThemeSwitch } from "@/components/commons/theme-switch";
 import { Main } from "@/components/layouts/main";
+import { OrdersViews } from "../components/orders/orders-views";
 
 const OrdersPage = () => {
   return (
@@ -21,13 +22,12 @@ const OrdersPage = () => {
           <ProfileDropdown />
         </div>
       </AppHeader>
-      <Main fixed>
+      <Main fixed className="relative">
         <div className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">Orders</h1>
-          <p className="text-muted-foreground">
-            View and manage all your orders in a single table.
-          </p>
+          <p className="text-muted-foreground">Manage your orders here.</p>
         </div>
+        <OrdersViews />
       </Main>
     </DashboardPageLayout>
   );

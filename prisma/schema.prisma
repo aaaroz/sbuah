@@ -64,7 +64,7 @@ enum ProductStatus {
 
 enum OrderStatus {
   PENDING
-  PAID
+  ON_PROCESS
   COMPLETED
   CANCELLED
 }
@@ -89,11 +89,13 @@ model Order {
   email       String?
 
   // Order meta
-  note   String?
-  status OrderStatus @default(PENDING)
+  note       String?
+  status     OrderStatus @default(PENDING)
+  statusRank Int         @default(4)
 
   paymentMethod  PaymentMethod
   purchaseMethod PurchaseMethod
+  address        String?
 
   subtotal    Decimal @db.Decimal(12, 2)
   totalAmount Decimal @db.Decimal(12, 2)
@@ -103,8 +105,8 @@ model Order {
 
   items OrderItem[]
 
-  @@index([createdAt])
-  @@index([status])
+  @@index([status, statusRank, createdAt, id])
+  @@index([createdAt, id])
 }
 
 model OrderItem {

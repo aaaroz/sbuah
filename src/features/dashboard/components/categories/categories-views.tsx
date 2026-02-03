@@ -50,7 +50,7 @@ export const CategoriesViews = () => {
 
   return (
     <>
-      <div className="flex items-end justify-between sm:my-4 sm:items-center">
+      <div className="my-4 flex items-end justify-between sm:items-center">
         <div className="flex flex-col gap-4 sm:flex-row">
           <Input
             placeholder="Cari kategori..."
@@ -88,14 +88,14 @@ export const CategoriesViews = () => {
 
       <Separator className="shadow-xs" />
 
-      <ul className="faded-bottom no-scrollbar grid gap-4 overflow-auto pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3">
+      <ul className="faded-bottom no-scrollbar grid gap-4 overflow-auto pt-4 pb-16 md:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (
-          <li className="flex items-center justify-center gap-2 text-sm text-muted-foreground md:col-span-2 lg:col-span-3">
+          <li className="text-muted-foreground flex items-center justify-center gap-2 text-sm md:col-span-2 lg:col-span-3">
             <Loader2 className="animate-spin" />
             Sabar yaa…
           </li>
         ) : filteredApps.length === 0 ? (
-          <li className="flex items-center justify-center gap-2 text-sm text-muted-foreground md:col-span-2 lg:col-span-3">
+          <li className="text-muted-foreground flex items-center justify-center gap-2 text-sm md:col-span-2 lg:col-span-3">
             Upps kategori kosong..
           </li>
         ) : (
@@ -109,7 +109,7 @@ export const CategoriesViews = () => {
                 <CategoriesActions category={category} />
               </div>
               <div className="flex flex-col gap-2">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-muted-foreground text-sm">
                   {category.products.length > 0
                     ? "Produk yang ada di kategori ini:"
                     : "Belum ada produk untuk kategori ini."}

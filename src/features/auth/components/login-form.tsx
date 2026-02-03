@@ -118,7 +118,7 @@ export const LoginForm = () => {
                       className="bg-rose-950"
                     />
                     <span
-                      className="absolute right-4 top-2.5 cursor-pointer"
+                      className="absolute top-2.5 right-4 cursor-pointer"
                       onClick={() => setIsVisible((prev) => !prev)}
                     >
                       {isVisible ? <EyeClosed size={18} /> : <Eye size={18} />}

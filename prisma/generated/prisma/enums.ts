@@ -20,7 +20,7 @@ export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
 
 export const OrderStatus = {
   PENDING: 'PENDING',
-  PAID: 'PAID',
+  ON_PROCESS: 'ON_PROCESS',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED'
 } as const

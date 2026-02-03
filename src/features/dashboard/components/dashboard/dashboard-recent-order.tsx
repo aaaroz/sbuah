@@ -17,7 +17,7 @@ export function RecentOrders() {
 
   if (!data?.length) {
     return (
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         Belum ada pesanan terbaru.
       </p>
     );
@@ -28,6 +28,7 @@ export function RecentOrders() {
       {data.map((order) => (
         <OrderCard
           key={order.id}
+          orderNumber={order.orderNumber}
           buyerName={order.buyerName}
           phoneNumber={order.phoneNumber}
           status={order.status}
