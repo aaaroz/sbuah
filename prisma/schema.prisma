@@ -83,12 +83,10 @@ model Order {
   id          String @id @default(uuid()) @db.Char(36)
   orderNumber Int    @unique @default(autoincrement())
 
-  // Buyer info
   buyerName   String
   phoneNumber String
   email       String?
 
-  // Order meta
   note       String?
   status     OrderStatus @default(PENDING)
   statusRank Int         @default(4)
@@ -96,6 +94,8 @@ model Order {
   paymentMethod  PaymentMethod
   purchaseMethod PurchaseMethod
   address        String?
+  isPaid         Boolean        @default(false)
+  proofImageUrl  String?
 
   subtotal    Decimal @db.Decimal(12, 2)
   totalAmount Decimal @db.Decimal(12, 2)

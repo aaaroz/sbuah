@@ -1249,6 +1249,8 @@ export const OrderScalarFieldEnum = {
   paymentMethod: 'paymentMethod',
   purchaseMethod: 'purchaseMethod',
   address: 'address',
+  isPaid: 'isPaid',
+  proofImageUrl: 'proofImageUrl',
   subtotal: 'subtotal',
   totalAmount: 'totalAmount',
   createdAt: 'createdAt',

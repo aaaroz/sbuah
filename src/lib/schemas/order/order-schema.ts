@@ -52,6 +52,8 @@ export const orderReadSchema = orderBaseSchema.extend({
   id: z.uuid(),
   orderNumber: z.number().int(),
   status: orderStatusEnum,
+  statusRank: z.number().int(),
+  proofImageUrl: z.url().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
   items: z.array(orderItemReadSchema),
@@ -59,18 +61,26 @@ export const orderReadSchema = orderBaseSchema.extend({
 
 export const orderIdSchema = orderReadSchema.pick({ id: true });
 
-export const orderUpdateSchema = z.object({
-  id: z.uuid(),
-  buyerName: z.string().min(1).optional(),
-  phoneNumber: z.string().min(8).optional(),
-  email: z.email().nullable().optional(),
-  note: z.string().nullable().optional(),
-  status: orderStatusEnum.optional(),
-  paymentMethod: paymentMethodEnum.optional(),
-  purchaseMethod: purchaseMethodEnum.optional(),
-  subtotal: z.coerce.number().nonnegative().optional(),
-  totalAmount: z.coerce.number().nonnegative().optional(),
-});
+export const orderUpdateSchema = z
+  .object({
+    id: z.uuid(),
+    orderNumber: z.number().int(),
+    buyerName: z.string().min(1),
+    phoneNumber: z.string().min(8),
+    email: z.email().nullable(),
+    note: z.string().nullable(),
+    status: orderStatusEnum,
+    statusRank: z.number().int(),
+    isPaid: z.boolean(),
+    proofImageUrl: z.url().nullable(),
+    paymentMethod: paymentMethodEnum,
+    purchaseMethod: purchaseMethodEnum,
+    subtotal: z.number().nonnegative(),
+    totalAmount: z.number().nonnegative(),
+  })
+  .partial();
+
+export type OrderFormValues = z.infer<typeof orderUpdateSchema>;
 
 export const getAllOrderSchema = z.object({
   limit: z.number().int().min(1).max(50).default(10),

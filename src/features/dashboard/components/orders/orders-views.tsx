@@ -35,6 +35,7 @@ import { format } from "date-fns";
 import { Field } from "@/components/ui/field";
 import { Calendar } from "@/components/ui/calendar";
 import { id } from "date-fns/locale";
+import { Ribbon } from "@/components/ui/ribbon";
 
 const STATUS_OPTIONS = [
   { label: "Menunggu", value: "PENDING" },
@@ -248,19 +249,38 @@ export const OrdersViews = () => {
                 buyerName,
                 phoneNumber,
                 status,
+                isPaid,
+                proofImageUrl,
                 createdAt,
                 items,
               }) => (
-                <OrdersCard
-                  key={id}
-                  phoneNumber={phoneNumber}
-                  orderNumber={orderNumber}
-                  buyerName={buyerName}
-                  totalAmount={Number(totalAmount)}
-                  status={status}
-                  createdAt={createdAt}
-                  items={items}
-                />
+                <div key={id} className="relative p-1">
+                  {!isPaid && proofImageUrl && (
+                    <Ribbon
+                      text="Cek Bukti"
+                      className="before:bg-amber-500 after:bg-amber-500"
+                      childClassName="bg-amber-400"
+                    />
+                  )}
+                  {isPaid && (
+                    <Ribbon
+                      text="Dibayar"
+                      className="before:bg-emerald-500 after:bg-emerald-500"
+                      childClassName="bg-emerald-400"
+                    />
+                  )}
+                  <OrdersCard
+                    orderId={id}
+                    phoneNumber={phoneNumber}
+                    orderNumber={orderNumber}
+                    buyerName={buyerName}
+                    totalAmount={Number(totalAmount)}
+                    status={status}
+                    isPaid={isPaid}
+                    createdAt={createdAt}
+                    items={items}
+                  />
+                </div>
               ),
             )}
 

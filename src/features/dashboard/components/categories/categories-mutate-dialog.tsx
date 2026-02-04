@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -109,6 +107,7 @@ export function CategoriesMutateDialog({
             <DialogTitle>{content.title}</DialogTitle>
             <DialogDescription>{content.description}</DialogDescription>
           </DialogHeader>
+
           <CategoryMutateForm
             form={form}
             onSubmit={onSubmit}

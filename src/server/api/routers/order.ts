@@ -112,6 +112,8 @@ export const orderRouter = createTRPCRouter({
           status: true,
           statusRank: true,
           totalAmount: true,
+          isPaid: true,
+          proofImageUrl: true,
           createdAt: true,
           items: {
             select: {

@@ -102,11 +102,11 @@ export function CategoriesProvider({
 }
 
 export const useCategories = () => {
-  const productsContext = React.useContext(CategoriesContext);
+  const categoriesContext = React.useContext(CategoriesContext);
 
-  if (!productsContext) {
+  if (!categoriesContext) {
     throw new Error("useCategories has to be used within <CategoriesContext>");
   }
 
-  return productsContext;
+  return categoriesContext;
 };
