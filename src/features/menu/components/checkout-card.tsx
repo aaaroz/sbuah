@@ -6,33 +6,42 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
+import { type CartItem } from "@/lib/stores/cart-store";
 
-type Props = {
-  test?: number;
-};
-
-export const CheckoutCard = (_props: Props) => {
+export const CheckoutCard = ({
+  id,
+  imageUrl,
+  name,
+  quantity,
+  price,
+  note,
+}: CartItem) => {
   return (
     <Card className="w-full bg-rose-950">
-      <CardContent className="p-1 px-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Image
-            alt="sop-buah"
-            src="/sop-buah-menu.webp"
-            width={50}
-            height={50}
-            className="max-h-20 w-auto shrink-0 rounded-md"
-          />
-          <div className="flex flex-col justify-center text-white">
-            <CardTitle className="text-base md:text-lg">
-              Sop Buah Special
-            </CardTitle>
-            <span className="text-xs">Jumlah : 1</span>
+      <CardContent className="flex flex-row items-center justify-between p-1 px-4">
+        <div>
+          <div className="flex flex-wrap items-center justify-start gap-3">
+            <Image
+              alt={name}
+              src={imageUrl ?? "/sop-buah-menu.webp"}
+              width={50}
+              height={50}
+              className="size-20 shrink-0 rounded-md bg-white"
+            />
+            <div className="flex flex-col justify-center text-white">
+              <CardTitle className="text-base md:text-lg">{name}</CardTitle>
+              <span className="text-muted-foreground text-xs">
+                Jumlah : {quantity}
+              </span>
+              <span className="text-muted-foreground text-xs">
+                Catatan : {note ?? "-"}
+              </span>
+            </div>
           </div>
-          <CardDescription className="text-sm font-semibold text-white">
-            Rp 10.000,-
-          </CardDescription>
         </div>
+        <CardDescription className="text-xl font-semibold text-white">
+          Rp {price.toLocaleString("id-ID")}
+        </CardDescription>
       </CardContent>
     </Card>
   );

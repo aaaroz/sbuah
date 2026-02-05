@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -36,6 +36,7 @@ import { Field } from "@/components/ui/field";
 import { Calendar } from "@/components/ui/calendar";
 import { id } from "date-fns/locale";
 import { Ribbon } from "@/components/ui/ribbon";
+import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect";
 
 const STATUS_OPTIONS = [
   { label: "Menunggu", value: "PENDING" },
@@ -82,7 +83,7 @@ export const OrdersViews = () => {
   }, [orders, searchTerm]);
 
   // Intersection Observer
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!hasNextPage || !loadMoreRef.current) return;
 
     const observer = new IntersectionObserver(

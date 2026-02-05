@@ -30,6 +30,7 @@ import { Form } from "@/components/ui/form";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { useCategories } from "./categories-provider";
 import { toast } from "sonner";
+import { type orderCreateSchema } from "@/lib/schemas/order/order-schema";
 
 type CategoriesMutateDialogProps = {
   open: boolean;

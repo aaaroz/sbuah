@@ -22,7 +22,7 @@ export function OrderCard({
   const statusConfig = orderStatusMap[status];
 
   return (
-    <div className="hover:bg-accent flex cursor-pointer items-center gap-4 rounded-lg p-2 transition-all duration-200 hover:shadow-xs">
+    <div className="hover:bg-accent flex items-center gap-4 rounded-lg p-2 transition-all duration-200 hover:shadow-xs">
       <Avatar className="h-9 w-9">
         <AvatarFallback>#{orderNumber}</AvatarFallback>
       </Avatar>

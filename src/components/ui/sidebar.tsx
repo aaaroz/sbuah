@@ -142,7 +142,8 @@ const SidebarProvider = React.forwardRef<
         toggleSidebar,
       ],
     );
-    if (!pathname.includes("dashboard")) {
+
+    if (["dashboard"].includes(pathname)) {
       return <div>{children}</div>;
     }
 

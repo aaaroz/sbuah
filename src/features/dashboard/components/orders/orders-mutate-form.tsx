@@ -34,7 +34,7 @@ export function OrdersMutateForm({ form }: OrderMutateFormProps) {
     <>
       <div className="mb-4 flex w-full flex-col items-center justify-center">
         <Avatar className="size-16">
-          <AvatarFallback className="text-xl font-bold">
+          <AvatarFallback className="text-foreground border text-xl font-bold">
             #{form.watch("orderNumber")}
           </AvatarFallback>
         </Avatar>

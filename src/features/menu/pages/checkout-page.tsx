@@ -9,7 +9,7 @@ const CheckoutPage = () => {
     <LandingPageLayout>
       <HeadMetaData title="Checkout Pesanan" />
       <div className="mt-4 flex flex-col gap-14 md:gap-16">
-        <HeaderCircle title="Formulir Pemesanan" />
+        <HeaderCircle title="Checkout Pesanan" />
         <CheckoutForm />
       </div>
     </LandingPageLayout>

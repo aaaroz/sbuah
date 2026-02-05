@@ -21,48 +21,128 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useCartStore } from "@/lib/stores/cart-store";
+import { Separator } from "@/components/ui/separator";
+import { api } from "@/lib/utils";
+import { toast } from "sonner";
+import { type orderCreateSchema } from "@/lib/schemas/order/order-schema";
+import { useRouter } from "next/router";
 
-const checkoutSchema = z.object({
-  name: z
-    .string({ error: "Nama harus diisi!" })
-    .min(3, { message: "Nama minimal 3 karakter" })
-    .max(50, { message: "Nama maksimal 50 karakter" }),
-  telephone: z
-    .string({ error: "Nomor telepon harus diisi!" })
-    .min(10, { message: "Nomor telepon kurang dari 10 digit" }),
-  email: z.email({ message: "Email tidak valid" }).optional(),
-  message: z.string().optional(),
-  termsOfService: z.boolean().refine((val) => val, {
-    message: "Anda harus menyetujui syarat dan ketentuan S'BUAH!",
-  }),
-  paymentMethod: z.enum(["cash", "transfer"], {
-    error: "Silahkan pilih metode pembayaran!",
-  }),
-  buyingMethod: z.enum(["delivery", "pickup"], {
-    error: "Silahkan pilih metode pengiriman!",
-  }),
-  address: z
-    .string({ error: "Alamat harus diisi!" })
-    .min(10, { message: "Alamat minimal 10 karakter atau lebih" })
-    .optional()
-    .refine((val) => val, {
-      message: "Alamat harus diisi!",
+export const checkoutSchema = z
+  .object({
+    name: z
+      .string({ error: "Nama harus diisi!" })
+      .min(3, { message: "Nama minimal 3 karakter" })
+      .max(50, { message: "Nama maksimal 50 karakter" }),
+
+    telephone: z
+      .string({ error: "Nomor telepon harus diisi!" })
+      .min(10, { message: "Nomor telepon minimal 10 digit" }),
+
+    email: z.string().email({ message: "Email tidak valid" }).optional(),
+
+    message: z.string().optional(),
+
+    termsOfService: z
+      .boolean({
+        error: "Anda harus menyetujui syarat dan ketentuan S'BUAH!",
+      })
+      .refine((val) => val === true, {
+        message: "Anda harus menyetujui syarat dan ketentuan S'BUAH!",
+      }),
+
+    paymentMethod: z.enum(["cash", "transfer"], {
+      error: "Silahkan pilih metode pembayaran!",
     }),
-});
+    buyingMethod: z.enum(["delivery", "pickup"], {
+      error: "Silahkan pilih metode pengiriman!",
+    }),
+
+    address: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.buyingMethod === "delivery") {
+      if (!data.address || data.address.trim().length < 10) {
+        ctx.addIssue({
+          path: ["address"],
+          message: "Alamat wajib diisi minimal 10 karakter untuk pengiriman",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    }
+  });
 
 type TCheckoutForm = z.infer<typeof checkoutSchema>;
 
+type InputOrderPayload = z.infer<typeof orderCreateSchema>;
+
+const ONGKIR = 2000;
+
 export const CheckoutForm = () => {
+  const router = useRouter();
+  const cartItems = useCartStore((s) => s.items);
+  const clearCart = useCartStore.getState().clearCart;
+  const totalPrice = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0,
+  );
+
+  const createOrderMutation = api.order.create.useMutation({
+    onSuccess: (data) => {
+      console.log(data);
+      toast.success("Pemesanan berhasil!");
+    },
+  });
+
   const form = useForm<TCheckoutForm>({
     resolver: zodResolver(checkoutSchema),
     mode: "onSubmit",
   });
 
-  const onSubmit = (values: TCheckoutForm) => {
-    console.log(values);
-  };
-
   const isDelivery = form.watch("buyingMethod") === "delivery";
+
+  const onSubmit = async (values: TCheckoutForm) => {
+    const shippingCost = isDelivery ? ONGKIR : 0;
+
+    const payload: InputOrderPayload = {
+      buyerName: values.name,
+      phoneNumber: values.telephone,
+      paymentMethod: values.paymentMethod === "cash" ? "CASH" : "TRANSFER",
+      purchaseMethod: values.buyingMethod === "pickup" ? "PICK_UP" : "DELIVERY",
+      subtotal: totalPrice,
+      totalAmount: totalPrice + shippingCost,
+      email: values.email,
+      note: values.message,
+      items: cartItems.map((item) => ({
+        productId: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        imageUrl: item.imageUrl,
+        note: item.note,
+      })),
+    };
+
+    const createOrderPromise = createOrderMutation.mutateAsync(payload);
+
+    toast.promise(createOrderPromise, {
+      loading: "Mengirimkan pesanan...",
+      success:
+        "Pesananmu sudah terkirim. Kamu akan dialihkan ke halaman detail pesanan.",
+      error: "Gagal membuat pesanan.",
+    });
+
+    try {
+      const res = await createOrderPromise;
+
+      setTimeout(() => {
+        clearCart();
+        void router.push(`/order/${res.id}`);
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div>
@@ -76,7 +156,7 @@ export const CheckoutForm = () => {
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-base font-semibold">
                     Nama
                   </FormLabel>
@@ -96,7 +176,7 @@ export const CheckoutForm = () => {
               control={form.control}
               name="telephone"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-base font-semibold">
                     No.Telp/WhatsApp
                   </FormLabel>
@@ -108,7 +188,7 @@ export const CheckoutForm = () => {
                       className="bg-rose-950 text-white placeholder:text-white/70"
                     />
                   </FormControl>
-                  <FormDescription className="flex text-xs text-secondary">
+                  <FormDescription className="text-primary flex text-xs">
                     <MessageCircleWarning size={16} className="mr-2 shrink-0" />{" "}
                     Masukkan nomor telepon/WA aktif, agar kami dapat dengan
                     mudah untuk menghubungi Anda
@@ -121,7 +201,7 @@ export const CheckoutForm = () => {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-base font-semibold">
                     Email <span>(optional)</span>
                   </FormLabel>
@@ -141,7 +221,7 @@ export const CheckoutForm = () => {
               control={form.control}
               name="message"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-base font-semibold">
                     Pesan/Note <span>(optional)</span>
                   </FormLabel>
@@ -157,14 +237,15 @@ export const CheckoutForm = () => {
                 </FormItem>
               )}
             />
+
+            <CheckoutDetail items={cartItems} />
           </div>
           <div className="flex w-full flex-col gap-6">
-            <CheckoutDetail />
             <FormField
               control={form.control}
               name="paymentMethod"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-base font-semibold">
                     Metode Pembayaran
                   </FormLabel>
@@ -174,24 +255,24 @@ export const CheckoutForm = () => {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex items-center space-y-0 space-x-3">
                         <FormControl>
                           <RadioGroupItem value="cash" />
                         </FormControl>
                         <FormLabel className="font-semibold">
                           Cash
-                          <FormDescription className="text-xs font-normal text-secondary">
+                          <FormDescription className="text-primary text-xs font-normal">
                             *Bayar ditempat/Outlet (warung Sop Buah Ibu Popon)
                           </FormDescription>
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex items-center space-y-0 space-x-3">
                         <FormControl>
                           <RadioGroupItem value="transfer" />
                         </FormControl>
                         <FormLabel className="font-semibold">
                           Transfer
-                          <FormDescription className="text-xs font-normal text-secondary">
+                          <FormDescription className="text-primary text-xs font-normal">
                             *Bayar menggunakan uang digital / Qris / Bank /
                             E-Wallet lainnya
                           </FormDescription>
@@ -207,7 +288,7 @@ export const CheckoutForm = () => {
               control={form.control}
               name="buyingMethod"
               render={({ field }) => (
-                <FormItem className="space-y-3">
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-base font-semibold">
                     Metode Pembelian
                   </FormLabel>
@@ -217,26 +298,27 @@ export const CheckoutForm = () => {
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex items-center space-y-0 space-x-3">
                         <FormControl>
                           <RadioGroupItem value="pickup" />
                         </FormControl>
                         <FormLabel className="font-semibold">
                           Pick Up
-                          <FormDescription className="text-xs font-normal text-secondary">
+                          <FormDescription className="text-primary text-xs font-normal">
                             *Jemput pesanan di outlet (warung Sop Buah Ibu
                             Popon)
                           </FormDescription>
                         </FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormItem className="flex items-center space-y-0 space-x-3">
                         <FormControl>
                           <RadioGroupItem value="delivery" />
                         </FormControl>
                         <FormLabel className="font-semibold">
                           Delivery
-                          <FormDescription className="text-xs font-normal text-secondary">
-                            *Pesanan diantar ke alamat anda
+                          <FormDescription className="text-primary text-xs font-normal">
+                            *Pesanan diantar ke alamat anda (khusus wilayah
+                            cipeundeuy/cirata)
                           </FormDescription>
                         </FormLabel>
                       </FormItem>
@@ -263,7 +345,7 @@ export const CheckoutForm = () => {
                         className="bg-rose-950 text-white placeholder:text-white/70"
                       />
                     </FormControl>
-                    <FormDescription className="flex text-xs text-secondary">
+                    <FormDescription className="text-primary flex text-xs">
                       <MessageCircleWarning
                         size={16}
                         className="mr-2 shrink-0"
@@ -276,36 +358,79 @@ export const CheckoutForm = () => {
                 )}
               />
             ) : null}
-          </div>
-          <div className="flex w-full flex-col gap-6">
-            <FormField
-              control={form.control}
-              name="termsOfService"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Saya menyetujui{" "}
-                      <Link
-                        href="/terms-of-service"
-                        className="font-semibold hover:underline"
-                      >
-                        Syarat dan Ketentuan
-                      </Link>{" "}
-                      pembelian melalui website S{"'"}BUAH
-                    </FormLabel>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-            <Button type="submit">Bayar Sekarang</Button>
+            <div className="flex flex-col gap-2">
+              <h1 className="text-xl font-bold">Rincian Pembayaran</h1>
+              <Separator />
+              <div className="flex flex-wrap items-center justify-between">
+                <h2 className="text-sm font-medium md:text-base">Subtotal:</h2>
+                <h1 className="text-base font-bold md:text-xl">
+                  Rp {totalPrice.toLocaleString("id")}
+                </h1>
+              </div>
+              <div className="flex flex-wrap items-center justify-between">
+                <h2 className="text-sm font-medium md:text-base">Ongkir:</h2>
+                <h1 className="text-base font-bold md:text-xl">
+                  Rp {(isDelivery ? ONGKIR : 0).toLocaleString("id")}
+                </h1>
+              </div>
+              <Separator />
+              <div className="flex flex-wrap items-center justify-between">
+                <h2 className="text-base font-semibold md:text-xl">
+                  Total yang harus dibayar :
+                </h2>
+                <h1 className="text-base font-bold md:text-2xl">
+                  Rp{" "}
+                  {(totalPrice + (isDelivery ? ONGKIR : 0)).toLocaleString(
+                    "id",
+                  )}
+                </h1>
+              </div>
+            </div>
+
+            <div className="flex w-full flex-col gap-6">
+              <FormField
+                control={form.control}
+                name="termsOfService"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Saya menyetujui{" "}
+                        <Link
+                          href="/terms-of-services"
+                          target="_blank"
+                          className="font-semibold hover:underline"
+                        >
+                          Syarat dan Ketentuan
+                        </Link>{" "}
+                        pembelian melalui website S{"'"}BUAH
+                      </FormLabel>
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <div className="flex w-full gap-2">
+                <Link href={"/menu/cart"}>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full cursor-pointer"
+                  >
+                    Ubah Pesanan
+                  </Button>
+                </Link>
+                <Button type="submit" className="w-full cursor-pointer">
+                  Bayar Sekarang
+                </Button>
+              </div>
+            </div>
           </div>
         </form>
       </Form>

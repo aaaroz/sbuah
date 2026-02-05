@@ -15,9 +15,15 @@ import { type CartItem, useCartStore } from "@/lib/stores/cart-store";
 
 type CartCardProps = {
   item: CartItem;
+  setIsDialogOpen: (val: boolean) => void;
+  setSelectedProduct: (item: CartItem | null) => void;
 };
 
-export const CartCard = ({ item }: CartCardProps) => {
+export const CartCard = ({
+  item,
+  setIsDialogOpen,
+  setSelectedProduct,
+}: CartCardProps) => {
   const updateQuantity = useCartStore.getState().updateQuantity;
   const removeItem = useCartStore((s) => s.removeItem);
 
@@ -83,10 +89,16 @@ export const CartCard = ({ item }: CartCardProps) => {
         </div>
 
         <div className="flex flex-col items-end justify-end gap-2 max-[450px]:w-full">
-          <Button className="w-full shrink-0 bg-rose-900 hover:bg-rose-900/70 md:w-fit">
+          <Button
+            className="w-full shrink-0 bg-rose-900 hover:bg-rose-900/70 md:w-fit"
+            onClick={() => {
+              setIsDialogOpen(true);
+              setSelectedProduct(item);
+            }}
+          >
             <NotebookPen size={24} />
             <span className="hidden max-[450px]:inline md:inline">
-              Tambah Catatan
+              {!item.note?.trim() ? "Tambah" : "Ubah"} Catatan
             </span>
           </Button>
 

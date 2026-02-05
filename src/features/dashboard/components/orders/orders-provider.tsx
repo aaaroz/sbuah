@@ -64,7 +64,7 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
         phoneNumber: currentOrder.phoneNumber,
         email: currentOrder.email,
         note: currentOrder.note,
-        status: status,
+        status: open === "cancel" ? "CANCELLED" : status,
         statusRank: currentOrder.statusRank,
         isPaid: currentOrder.isPaid,
         proofImageUrl: currentOrder.proofImageUrl,
