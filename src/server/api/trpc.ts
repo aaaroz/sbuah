@@ -6,13 +6,15 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 import { db } from "@/server/db";
-
+import { type User } from "better-auth";
+import { auth } from "../auth";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { toFetchHeaders } from "@/lib/utils";
 /**
  * 1. CONTEXT
  *
@@ -21,7 +23,9 @@ import { db } from "@/server/db";
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-type CreateContextOptions = Record<string, never>;
+type CreateContextOptions = {
+  user?: User | null;
+};
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
@@ -33,9 +37,10 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     db,
+    user: opts.user,
   };
 };
 
@@ -45,8 +50,14 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+  const session = await auth.api.getSession({
+    headers: toFetchHeaders(opts.req.headers),
+  });
+
+  return createInnerTRPCContext({
+    user: session?.user,
+  });
 };
 
 /**
@@ -65,7 +76,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       data: {
         ...shape.data,
         zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+          error.cause instanceof ZodError ? z.treeifyError(error.cause) : null,
       },
     };
   },
@@ -115,6 +126,13 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const authMiddleware = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.user)
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "user unauthorized" });
+
+  return await next();
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -123,3 +141,5 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+export const privateProcedure = t.procedure.use(authMiddleware);

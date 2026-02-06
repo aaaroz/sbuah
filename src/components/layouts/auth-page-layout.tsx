@@ -1,0 +1,13 @@
+import * as React from "react";
+
+export const AuthPageLayout = ({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) => {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-background">
+      {children}
+    </main>
+  );
+};

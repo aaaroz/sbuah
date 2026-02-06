@@ -18,6 +18,22 @@ const config = {
     defaultLocale: "en",
   },
   transpilePackages: ["geist"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+        port: "",
+        pathname: "/600x400/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.ufs.sh",
+        port: "",
+      },
+    ],
+    dangerouslyAllowSVG: true,
+  },
 };
 
 export default config;

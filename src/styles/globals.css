@@ -1,3 +1,308 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+}
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 97.25%;
+    --foreground: 20 14.29% 4.12%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --primary: 346.8 77.2% 49.8%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 346.22 56.92% 25.49%;
+    --secondary-foreground: 0 0% 97.25%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --success: 142.1 76.2% 36.3%; /* green-600-ish */
+    --success-foreground: 0 0% 98%; /* white-ish */
+    --destructive: 0 100% 45.77%;
+    --destructive-foreground: 0 0% 98%;
+    --ring: 346.8 77.2% 49.8%;
+    --chart-1: 341.89 79.6% 54.74%;
+    --chart-2: 160.75 54.58% 44.29%;
+    --chart-3: 197 75.21% 56.55%;
+    --chart-4: 101.89 100% 63.16%;
+    --chart-5: 49.81 95.41% 66.5%;
+    --radius: 0.5rem;
+
+    /* Sidebar vars now mirror main vars */
+    --sidebar-background: var(--background);
+    --sidebar-foreground: var(--foreground);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: var(--accent);
+    --sidebar-accent-foreground: var(--accent-foreground);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+  }
+
+  .dark {
+    --background: 346.22 34.12% 6.88%;
+    --foreground: 0 0% 95%;
+    --muted: 0 0% 8.63%;
+    --muted-foreground: 240 5% 64.9%;
+    --popover: 350 33.33% 7.06%;
+    --popover-foreground: 0 0% 95%;
+    --card: 350 40.74% 12.57%;
+    --card-foreground: 0 0% 95%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --primary: 346.8 77.2% 49.8%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 346.22 56.92% 25.49%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 346.67 14.86% 14.73%;
+    --accent-foreground: 0 0% 98%;
+    --success: 142.1 70.6% 45.3%; /* green-500-ish */
+    --success-foreground: 144 61% 10%; /* dark green text */
+    --destructive: 0 95.12% 52.7%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --ring: 346.8 77.2% 49.8%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    /* Sidebar vars mirror main vars in dark mode too */
+    --sidebar-background: var(--background);
+    --sidebar-foreground: var(--foreground);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: var(--accent);
+    --sidebar-accent-foreground: var(--accent-foreground);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  /* ===== Scrollbar: Firefox ===== */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(346.8 77.2% 49.8%) transparent;
+  }
+
+  /* ===== Scrollbar: Chrome, Edge, Safari ===== */
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: hsl(346.8 77.2% 49.8%);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(346.8 77.2% 44%);
+  }
+}
+
+@layer base {
+  /* Chrome, Edge, Safari */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+/* ----- Ribbon Container ---------------------------------------*/
+#ribbon-container {
+  background: transparent;
+  height: 130px;
+  width: 200px;
+  position: absolute;
+  top: -0px;
+  right: -0px;
+  overflow: hidden;
+}
+
+/* ----- Top Curl ---------------------------------------*/
+#ribbon-container:before {
+  content: "";
+  display: block;
+  -webkit-border-radius: 10px 10px 0px 0px;
+  border-radius: 10px 10px 0px 0px;
+  width: 35px;
+  height: 10px;
+  position: absolute;
+  right: 30px;
+  z-index: 1;
+}
+
+/* ----- Right Curl ---------------------------------------*/
+#ribbon-container:after {
+  content: "";
+  display: block;
+  -webkit-border-radius: 0px 10px 10px 0px;
+  border-radius: 0px 10px 10px 0px;
+  width: 10px;
+  height: 35px;
+  position: absolute;
+  right: 0px;
+  top: 30px;
+}
+
+/* ----- Ribbon ---------------------------------------*/
+#ribbon-container > div {
+  width: 100px;
+  height: 20px;
+  position: relative;
+  top: 18px;
+  right: -135px;
+  z-index: 11;
+  overflow: hidden;
+  transform: rotate(45deg);
+  -ms-transform: rotate(45deg); /* IE 9 */
+  -moz-transform: rotate(45deg); /* Firefox */
+  -webkit-transform: rotate(45deg); /* Safari and Chrome */
+  -o-transform: rotate(45deg); /* Opera */
+}
+
+@utility faded-bottom {
+  @apply after:pointer-events-none after:absolute after:start-0 after:bottom-0 after:hidden after:h-32 after:w-full after:rounded-b-2xl after:bg-[linear-gradient(180deg,transparent_10%,hsl(var(--background))_70%)] md:after:block;
+}
+
+@utility faded-bottom-small {
+  @apply after:pointer-events-none after:absolute after:start-0 after:-bottom-2 after:hidden after:h-6 after:w-full after:bg-[linear-gradient(180deg,transparent_10%,hsl(var(--background))_70%)] md:after:block;
+}
+
+@keyframes rightInfinite {
+  0% {
+    transform: translateX(-150px);
+  }
+  100% {
+    transform: translateX(150px);
+  }
+}
