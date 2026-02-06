@@ -10,9 +10,9 @@ import {
   bulkUpdateStatusSchema,
   updateProductSchema,
 } from "@/lib/schemas/product/product-schema";
-import { type Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { deleteUploadThingFile, getUploadthingKey } from "@/lib/utils";
+import { type ProductWhereInput } from "prisma/generated/prisma/models/Product";
 
 export const productRouter = createTRPCRouter({
   // ---------------------------
@@ -46,7 +46,7 @@ export const productRouter = createTRPCRouter({
       const searchQuery = input?.searchQuery;
 
       //      const where = categoryId ? { categoryId } : {};
-      const where: Prisma.ProductWhereInput = {
+      const where: ProductWhereInput = {
         ...(categoryId && {
           categoryId,
         }),
