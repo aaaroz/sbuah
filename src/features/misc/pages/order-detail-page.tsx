@@ -27,7 +27,6 @@ import { Ribbon } from "@/components/ui/ribbon";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -87,16 +86,14 @@ export default function OrderDetailPage() {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold">Detail Pesananmu</h1>
           <div className="flex flex-wrap items-center gap-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Badge variant={statusConfig.variant}>
-                    {statusConfig.label}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>{statusConfig.description}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Badge variant={statusConfig.variant}>
+                  {statusConfig.label}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>{statusConfig.description}</TooltipContent>
+            </Tooltip>
             <p className="text-muted-foreground text-sm">
               Order ID: <span className="font-mono">{order.id}</span>
             </p>

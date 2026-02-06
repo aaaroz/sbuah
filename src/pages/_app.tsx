@@ -6,6 +6,7 @@ import { api } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { LayoutProvider } from "@/lib/contexts/layout-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -18,7 +19,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <div className={GeistSans.className}>
         <LayoutProvider>
           <SidebarProvider>
-            <Component {...pageProps} />
+            <TooltipProvider delayDuration={0}>
+              <Component {...pageProps} />
+            </TooltipProvider>
           </SidebarProvider>
         </LayoutProvider>
         <Toaster />

@@ -45,7 +45,7 @@ export const productsColumns: ColumnDef<Product>[] = [
       <DataTableColumnHeader column={column} title="ID" />
     ),
     cell: ({ row }) => (
-      <div className="w-[100px] truncate text-muted-foreground">
+      <div className="text-muted-foreground w-[100px] truncate">
         {row.getValue("id")}
       </div>
     ),
@@ -79,7 +79,7 @@ export const productsColumns: ColumnDef<Product>[] = [
         <div className="flex flex-col gap-0.5">
           <span className="truncate font-medium">{row.getValue("name")}</span>
           {row.original.description && (
-            <span className="truncate text-xs text-muted-foreground">
+            <span className="text-muted-foreground truncate text-xs">
               {row.original.description}
             </span>
           )}
@@ -111,7 +111,7 @@ export const productsColumns: ColumnDef<Product>[] = [
   // ====================
   {
     id: "category",
-    accessorFn: (row) => row.category?.id,
+    accessorFn: (row) => row.categoryId,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Category" />
     ),
@@ -144,7 +144,7 @@ export const productsColumns: ColumnDef<Product>[] = [
             status === "ACTIVE"
               ? "default"
               : status === "DRAFT"
-                ? "outline-solid"
+                ? "outline"
                 : "secondary"
           }
         >
@@ -172,7 +172,7 @@ export const productsColumns: ColumnDef<Product>[] = [
       const date = row.getValue<Date>("createdAt");
 
       return (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-muted-foreground text-sm">
           {new Intl.DateTimeFormat("id-ID", {
             dateStyle: "medium",
           }).format(date)}
