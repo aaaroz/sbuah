@@ -29,6 +29,7 @@ export const orderRouter = createTRPCRouter({
           purchaseMethod,
           note,
           email,
+          address,
         },
       }) => {
         return ctx.db.order.create({
@@ -41,7 +42,7 @@ export const orderRouter = createTRPCRouter({
             purchaseMethod,
             note,
             email,
-
+            address,
             items: {
               create: items,
             },
@@ -147,16 +148,14 @@ export const orderRouter = createTRPCRouter({
   // ---------------------------
   // GET ONE ORDER BY ID
   // ---------------------------
-  getOne: privateProcedure
-    .input(orderIdSchema)
-    .query(async ({ ctx, input }) => {
-      return ctx.db.order.findUnique({
-        where: { id: input.id },
-        include: {
-          items: true,
-        },
-      });
-    }),
+  getOne: publicProcedure.input(orderIdSchema).query(async ({ ctx, input }) => {
+    return ctx.db.order.findUnique({
+      where: { id: input.id },
+      include: {
+        items: true,
+      },
+    });
+  }),
 
   // ---------------------------
   // UPDATE PRODUCT

@@ -39,7 +39,7 @@ export const checkoutSchema = z
       .string({ error: "Nomor telepon harus diisi!" })
       .min(10, { message: "Nomor telepon minimal 10 digit" }),
 
-    email: z.string().email({ message: "Email tidak valid" }).optional(),
+    email: z.email({ message: "Email tidak valid" }).optional(),
 
     message: z.string().optional(),
 
@@ -50,6 +50,7 @@ export const checkoutSchema = z
       .refine((val) => val === true, {
         message: "Anda harus menyetujui syarat dan ketentuan S'BUAH!",
       }),
+    saveForNextOrder: z.boolean().optional(),
 
     paymentMethod: z.enum(["cash", "transfer"], {
       error: "Silahkan pilih metode pembayaran!",
@@ -66,7 +67,7 @@ export const checkoutSchema = z
         ctx.addIssue({
           path: ["address"],
           message: "Alamat wajib diisi minimal 10 karakter untuk pengiriman",
-          code: z.ZodIssueCode.custom,
+          code: "custom",
         });
       }
     }
@@ -77,6 +78,17 @@ type TCheckoutForm = z.infer<typeof checkoutSchema>;
 type InputOrderPayload = z.infer<typeof orderCreateSchema>;
 
 const ONGKIR = 2000;
+const STORAGE_KEY = "checkout_draft";
+
+const saveCheckoutDraft = (payload: InputOrderPayload) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+};
+
+const getCheckoutDraft = (): InputOrderPayload | null => {
+  if (typeof window === "undefined") return null;
+  const raw = localStorage.getItem(STORAGE_KEY);
+  return raw ? (JSON.parse(raw) as InputOrderPayload) : null;
+};
 
 export const CheckoutForm = () => {
   const router = useRouter();
@@ -113,6 +125,7 @@ export const CheckoutForm = () => {
       totalAmount: totalPrice + shippingCost,
       email: values.email,
       note: values.message,
+      address: values.address,
       items: cartItems.map((item) => ({
         productId: item.id,
         name: item.name,
@@ -135,6 +148,12 @@ export const CheckoutForm = () => {
     try {
       const res = await createOrderPromise;
 
+      if (values.saveForNextOrder) {
+        saveCheckoutDraft(payload);
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+
       setTimeout(() => {
         clearCart();
         void router.push(`/order/${res.id}`);
@@ -143,6 +162,22 @@ export const CheckoutForm = () => {
       console.error(error);
     }
   };
+
+  React.useEffect(() => {
+    const draft = getCheckoutDraft();
+    if (!draft) return;
+
+    form.reset({
+      name: draft.buyerName,
+      telephone: draft.phoneNumber,
+      email: draft.email ?? "",
+      message: draft.note ?? "",
+      paymentMethod: draft.paymentMethod === "CASH" ? "cash" : "transfer",
+      buyingMethod: draft.purchaseMethod === "PICK_UP" ? "pickup" : "delivery",
+      address: draft.purchaseMethod === "DELIVERY" ? draft.address : undefined,
+      saveForNextOrder: true,
+    });
+  }, [form]);
 
   return (
     <div>
@@ -413,6 +448,24 @@ export const CheckoutForm = () => {
                       </FormLabel>
                       <FormMessage />
                     </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="saveForNextOrder"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel className="font-medium">
+                      Simpan untuk pesanan berikutnya
+                    </FormLabel>
                   </FormItem>
                 )}
               />

@@ -71,7 +71,7 @@ export const CustomPagination: React.FC<CustomPaginationProps> = ({
               className={cn(
                 "hidden md:flex",
                 currentPage === page
-                  ? "pointer-events-none"
+                  ? "border-primary pointer-events-none border"
                   : "hover:bg-neutral-200 dark:hover:bg-neutral-900",
               )}
             >

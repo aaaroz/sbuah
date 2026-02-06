@@ -42,6 +42,7 @@ export const orderBaseSchema = z.object({
   purchaseMethod: purchaseMethodEnum,
   subtotal: z.coerce.number().nonnegative(),
   totalAmount: z.coerce.number().nonnegative(),
+  address: z.string().optional(),
 });
 
 export const orderCreateSchema = orderBaseSchema.extend({

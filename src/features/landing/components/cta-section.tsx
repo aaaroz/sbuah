@@ -19,11 +19,11 @@ export const CtaSection = () => {
       </div>
       <div className="flex justify-center md:justify-end">
         <Image
-          src="/cta-image.png"
+          src="/full-characters.png"
           alt="cta-image"
-          width={250}
-          height={250}
-          className="bottom-0 h-auto w-72 md:absolute"
+          width={600}
+          height={400}
+          className="bottom-0 -m-10 h-auto w-[24rem] md:absolute"
         />
       </div>
     </div>

@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { signIn, signUp } from "@/lib/utils/auth-client";
+import { signIn } from "@/lib/utils/auth-client";
 import { useRouter } from "next/navigation";
 
 const authSchema = z.object({

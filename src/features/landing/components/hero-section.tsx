@@ -36,10 +36,10 @@ export const HeroSection = () => {
           </div>
         </div>
         <Image
-          src="/hero-image.png"
+          src="/hero-image-ai.png"
           alt="hero-section"
-          width={600}
-          height={600}
+          width={666}
+          height={666}
           className="relative z-20 h-auto min-h-60 w-auto max-w-full object-cover object-center md:h-auto"
           priority
         />

@@ -73,6 +73,7 @@ const SidebarProvider = React.forwardRef<
     ref,
   ) => {
     const pathname = usePathname();
+
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
 
@@ -143,8 +144,8 @@ const SidebarProvider = React.forwardRef<
       ],
     );
 
-    if (["dashboard"].includes(pathname)) {
-      return <div>{children}</div>;
+    if (!pathname?.startsWith("/dashboard")) {
+      return <>{children}</>;
     }
 
     return (
