@@ -11,6 +11,8 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: z.string(),
     BETTER_AUTH_URL: z.url(),
     UPLOADTHING_TOKEN: z.string(),
+    FIREBASE_CLIENT_EMAIL: z.email(),
+    FIREBASE_PRIVATE_KEY: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -23,6 +25,14 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_BASE_URL: z.string(),
+    NEXT_PUBLIC_FIREBASE_FCM_VAPID_KEY: z.string(),
+    NEXT_PUBLIC_FIREBASE_API_KEY: z.string(),
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string(),
+    NEXT_PUBLIC_FIREBASE_DATABASE_URL: z.url(),
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string(),
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: z.string(),
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string(),
+    NEXT_PUBLIC_FIREBASE_APP_ID: z.string(),
   },
 
   /**
@@ -34,8 +44,24 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
+    FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+    NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
+      process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    NEXT_PUBLIC_FIREBASE_DATABASE_URL:
+      process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID:
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
+      process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
+      process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    NEXT_PUBLIC_FIREBASE_FCM_VAPID_KEY:
+      process.env.NEXT_PUBLIC_FIREBASE_FCM_VAPID_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
