@@ -6,11 +6,31 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import useFcmToken from "@/hooks/use-fcm-token";
 
 const lemon = Lemon({ weight: "400", subsets: ["latin"] });
 
 export const HeroSection = () => {
   const { theme } = useTheme();
+  const { token, notificationPermissionStatus } = useFcmToken();
+  const handleTestNotification = async () => {
+    const res = await fetch("/api/send-notification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token,
+        title: "Test notification",
+        message: "This is a test notification",
+        link: "/menu",
+      }),
+    });
+    console.log({ notificationPermissionStatus });
+
+    const data = await res.json();
+    console.log(data);
+  };
   return (
     <section className="overflow-hidden rounded-2xl">
       <div className="relative flex flex-col items-center gap-14 rounded-2xl bg-rose-950 pt-16 text-white">
@@ -30,6 +50,7 @@ export const HeroSection = () => {
             es buah terbaik kami!
           </p>
           <div className="flex justify-center">
+            <Button onClick={handleTestNotification}>Test Notif</Button>
             <Button className="px-10 py-5" asChild>
               <Link href="/menu">Pesan Sekarang!</Link>
             </Button>
